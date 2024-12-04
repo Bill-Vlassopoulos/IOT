@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    background-color: #171616;
+
+}
+
+
+#map {
+    height: 70vh;
+    width: 100%;
+
+}
+
+.dashboard-container {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 1px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+
+#myChart,
+#myChart1 {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+
+}
+
+.graphs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px;
+    height: 40vh;
+    gap: 20px;
+    flex-wrap: wrap;
+}
