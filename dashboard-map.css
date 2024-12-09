@@ -81,6 +81,7 @@ html {
     flex-direction: row;
     width: 80%;
     justify-content: space-between;
+    gap:20px;
 }
 
 /* Left Column (Cards) */
@@ -156,19 +157,48 @@ html {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .dashboard-content {
         flex-direction: column;
+        width: 95%;
     }
 
     .left-column {
         flex-direction: row;
-        gap: 10px;
+        gap: 5px;
         justify-content: space-between;
-        flex-wrap: wrap;
     }
 
     .diagram-card {
         height: 300px;
     }
+}
+
+@media (min-width: 601px) and (max-width: 800px){
+    .left-column {
+        flex-direction: row;
+        gap: 5px;
+        justify-content: space-between;
+    }
+
+    .diagram-card {
+        height: 315px;
+    }
+
+    .dashboard-content {
+        flex-direction: column;
+    }
+}
+
+@media (min-width: 801px) and (max-width: 1100px) {
+    .dashboard-content {
+        width: 95%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .diagram-card {
+        height: 315px;
+    }
+
 }
