@@ -1,0 +1,174 @@
+/* General Reset */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Map Container */
+#map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    transition: filter 0.3s ease-in-out;
+}
+
+/* Map Blur Effect */
+.map-blurred {
+    filter: blur(5px);
+}
+
+/* Dashboard Overlay */
+#dashboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: all 0.3s ease-in-out;
+}
+
+#dashboard.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Open Dashboard Button */
+.map-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: blue;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 3;
+}
+
+/* Dashboard Content Layout */
+.dashboard-content {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    justify-content: space-between;
+}
+
+/* Left Column (Cards) */
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+}
+
+/* Individual Cards */
+.card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 150px;
+}
+
+.card-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon {
+    font-size: 2rem;
+}
+
+.info {
+    text-align: left;
+}
+
+.info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.info p {
+    margin: 5px 0 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Diagram Card */
+.diagram-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    flex: 2;
+}
+
+.diagram-card canvas {
+    width: 100%;
+    height: 100%;
+    max-height: 300px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-content {
+        flex-direction: column;
+    }
+
+    .left-column {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .diagram-card {
+        height: 300px;
+    }
+}

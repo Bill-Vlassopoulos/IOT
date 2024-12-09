@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with Overlay Dashboard</title>
+    <link rel="stylesheet" href="dashboard-map.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Dashboard Overlay -->
+    <div id="dashboard" class="hidden">
+        <button id="closeDashboard" class="close-btn">X</button>
+        <div class="dashboard-content">
+            <div class="dashboard">
+                <!-- Left Column -->
+                <div class="left-column">
+                    <!-- Card 1 -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="icon">🚗</div>
+                            <div class="info">
+                                <h3>Waiting Cars</h3>
+                                <p id="waiting-cars">10</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="icon">⚠️</div>
+                            <div class="info">
+                                <h3>Violations</h3>
+                                <p id="violations">3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Diagram Card -->
+                <div class="diagram-card">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Dashboard Button -->
+    <button id="openDashboard" class="map-btn">Open Dashboard</button>
+
+    <script src="dashboard-map.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Left Column -->
+        <div class="left-column">
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="icon">🚗</div>
+                    <div class="info">
+                        <h3>Waiting Cars</h3>
+                        <p id="waiting-cars">10</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="icon">⚠️</div>
+                    <div class="info">
+                        <h3>Violations</h3>
+                        <p id="violations">3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Diagram Card -->
+        <div class="diagram-card">
+            <canvas id="trafficChart"></canvas>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
