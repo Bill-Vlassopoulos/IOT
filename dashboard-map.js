@@ -162,12 +162,14 @@ const dashboard = document.getElementById('dashboard');
 const openDashboardBtn = document.getElementById('openDashboard');
 const closeDashboardBtn = document.getElementById('closeDashboard');
 const mapElement = document.getElementById('map');
+const goBackButton = document.getElementById('goBack');
 
 // Show the dashboard
 openDashboardBtn.addEventListener('click', () => {
     dashboard.classList.add('visible');
     mapElement.classList.add('map-blurred');
     openDashboardBtn.classList.add('hidden');
+    goBackButton.classList.add('hidden');
 });
 
 // Hide the dashboard
@@ -175,6 +177,7 @@ closeDashboardBtn.addEventListener('click', () => {
     dashboard.classList.remove('visible');
     mapElement.classList.remove('map-blurred');
     openDashboardBtn.classList.remove('hidden');
+    goBackButton.classList.remove('hidden');
 });
 
 // Set up dynamic data for the dashboard
