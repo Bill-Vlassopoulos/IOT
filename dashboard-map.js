@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // });
 
     var trafficLightIcon = L.icon({
-        iconUrl: 'traffic_light.png',
-        iconSize: [15, 30], // Adjust the size as needed
+        iconUrl: 'traffic-light.png',
+        iconSize: [25, 30], // Adjust the size as needed
         iconAnchor: [7, 30],
         popupAnchor: [1, -25],
         shadowSize: [25, 25]
