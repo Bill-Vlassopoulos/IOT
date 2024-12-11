@@ -14,13 +14,13 @@ document.addEventListener('DOMContentLoaded', function () {
         shadowSize: [41, 41]
     });
 
-    var redIcon = L.icon({
-        iconUrl: 'pngwing.com.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
+    // var redIcon = L.icon({
+    //     iconUrl: 'pngwing.com.png',
+    //     iconSize: [25, 41],
+    //     iconAnchor: [12, 41],
+    //     popupAnchor: [1, -34],
+    //     shadowSize: [41, 41]
+    // });
 
     var trafficLightIcon = L.icon({
         iconUrl: 'traffic_light.png',
@@ -41,54 +41,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //Φανάρια στην διαστάρωση του Πανεπιστημίου Πατρών
     var tl_junction1=[
-        { lat: 38.286961, lng: 21.787422, title: 'Φανάρι 1' },
-        { lat: 38.286913, lng: 21.787274, title: 'Φανάρι 2' },
-        { lat: 38.286880, lng: 21.787268, title: 'Φανάρι 3' },
-        { lat: 38.286879, lng: 21.787308, title: 'Φανάρι 4' }
+        { lat: 38.286996, lng: 21.787494, title: 'Φανάρι 1' },
+        { lat: 38.286981, lng: 21.787217, title: 'Φανάρι 2' },
+        { lat: 38.286845, lng: 21.787206, title: 'Φανάρι 3' },
+        { lat: 38.286805, lng: 21.787362, title: 'Φανάρι 4' }
     ];
 
     //Φανάρια στον Τόφαλο 1
     var tl_junction2=[
-        { lat: 38.286394, lng: 21.774315, title: 'Φανάρι 1' },
-        { lat: 38.286351, lng: 21.774327, title: 'Φανάρι 2' },
-        { lat: 38.286336, lng: 21.774279, title: 'Φανάρι 3' },
-        { lat:38.286389, lng: 21.774222,  title:'Φανάρι 4'  }
+        { lat: 38.286471, lng: 21.774371, title: 'Φανάρι 1' },
+        { lat: 38.286327, lng: 21.774394, title: 'Φανάρι 2' },
+        { lat: 38.286299, lng: 21.774248, title: 'Φανάρι 3' },
+        { lat: 38.286403, lng: 21.774191,  title:'Φανάρι 4'  }
     
     ];
 
     //Φανάρια στον Τόφαλο 2
     var tl_junction3=[
-        { lat:38.282542, lng: 21.771544, title: 'Φανάρι 1' },
-        { lat: 38.282550, lng: 21.771586, title: 'Φανάρι 2' },
-        { lat: 38.282531, lng: 21.771536, title: 'Φανάρι 3' },
-        { lat: 38.282588, lng: 21.771484, title: 'Φανάρι 4' }
+        { lat: 38.282501, lng: 21.771518, title: 'Φανάρι 1' },
+        { lat: 38.282539, lng: 21.771629, title: 'Φανάρι 2' },
+        { lat: 38.282639, lng: 21.771593, title: 'Φανάρι 3' },
+        { lat: 38.282608, lng: 21.771444, title: 'Φανάρι 4' }
         
     ];
 
     //Φανάρια στην Ζαίμη
     var tl_junction4=[
-        { lat: 38.302064, lng: 21.780860, title: 'Φανάρι 1' },
-        { lat: 38.302012, lng: 21.780871, title: 'Φανάρι 2' },
-        { lat: 38.302015, lng: 21.780803, title: 'Φανάρι 3' },
-        { lat: 38.302064, lng: 21.780803, title: 'Φανάρι 4' }
+        { lat: 38.302139, lng: 21.780937, title: 'Φανάρι 1' },
+        { lat: 38.301965, lng: 21.780922, title: 'Φανάρι 2' },
+        { lat: 38.301972, lng: 21.780745, title: 'Φανάρι 3' },
+        { lat: 38.302097, lng: 21.780763, title: 'Φανάρι 4' }
         
     ];
 
     //Φανάρια στην Σίκινου
     var tl_junction5=[
-        { lat: 38.289055, lng: 21.768208, title: 'Φανάρι 1' },
-        { lat: 38.289041, lng: 21.768141, title: 'Φανάρι 2' },
-        { lat: 38.288998, lng: 21.768165, title: 'Φανάρι 3' },
-        { lat: 38.289050, lng: 21.768210, title: 'Φανάρι 4' }
+        { lat: 38.289115, lng: 21.768258, title: 'Φανάρι 1' },
+        { lat: 38.288937, lng: 21.768398, title: 'Φανάρι 2' },
+        { lat: 38.289063, lng: 21.768091, title: 'Φανάρι 3' },
+        { lat: 38.288906, lng: 21.768098, title: 'Φανάρι 4' }
         
     ];
 
     
 
+    var trafficLightsData = [
+        tl_junction1,
+        tl_junction2,
+        tl_junction3,
+        tl_junction4,
+        tl_junction5
+    ];
+
     var lastClickedMarker = null;
     var trafficLightMarkers = [];
+    const goBackButton = document.getElementById('goBack');
+    const dashboardbtn = document.getElementById('openDashboard');
+    var markers = [];
 
-
+    // Add markers for each location
     locations.forEach(function (location, index) {
         var marker = L.marker([location.lat, location.lng], { icon: defaultIcon }).addTo(map)
             .bindPopup(location.title)
@@ -100,32 +111,52 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                     trafficLightMarkers = [];
                 }
-                marker.setIcon(redIcon);
+    
                 lastClickedMarker = marker;
-                map.flyTo([location.lat, location.lng], 18); // Use flyTo for smooth zoom
+                map.flyTo([location.lat, location.lng], 18);
     
-                // Add traffic light markers for the selected junction
-                var trafficLights = [];
-                if (index === 0) {
-                    trafficLights = tl_junction1;
-                } else if (index === 1) {
-                    trafficLights = tl_junction2;
-                } else if (index === 2) {
-                    trafficLights = tl_junction3;
-                } else if (index === 3) {
-                    trafficLights = tl_junction4;
-                } else if (index === 4) {
-                    trafficLights = tl_junction5;
-                }
-    
+                var trafficLights = trafficLightsData[index];
                 trafficLights.forEach(function (tl) {
                     var tlMarker = L.marker([tl.lat, tl.lng], { icon: trafficLightIcon }).addTo(map)
-                        .bindPopup(tl.title);
+                        .bindPopup(tl.title)
+                        .on('click', function () {
+                            // Show the dashboard button when a traffic light is clicked
+                            dashboardbtn.classList.remove('hidden');
+                        });
                     trafficLightMarkers.push(tlMarker);
                 });
+    
+                map.removeLayer(marker); // Hide the location marker
+                goBackButton.classList.remove('hidden'); // Show the go back button
             });
+        markers.push(marker);
+    });
+
+    // Reset map to initial state
+    goBackButton.addEventListener('click', function () {
+        map.flyTo([38.266639, 21.798573], 13);
+
+        markers.forEach(function (marker) {
+            marker.addTo(map);
+        });
+
+        trafficLightMarkers.forEach(function (tlMarker) {
+            map.removeLayer(tlMarker);
+        });
+        trafficLightMarkers = [];
+
+        if (lastClickedMarker) {
+            lastClickedMarker.setIcon(defaultIcon);
+        }
+        lastClickedMarker = null;
+
+        goBackButton.classList.add('hidden');
+        dashboardbtn.classList.add('hidden');
     });
 });
+
+
+
 // Get elements
 const dashboard = document.getElementById('dashboard');
 const openDashboardBtn = document.getElementById('openDashboard');

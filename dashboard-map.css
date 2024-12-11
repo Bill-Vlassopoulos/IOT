@@ -8,11 +8,20 @@ html {
     overflow: hidden;
 }
 
+.navbar {
+    border-bottom: 1px solid white;
+    width: 100%;
+    margin: 0 auto;
+    background-color: black;
+
+}
+
 /* Map Container */
 #map {
     width: 100%;
-    height: 100%;
-    position: relative;
+    height: 90%;
+    bottom: 0;
+    position: absolute;
     z-index: 1;
     transition: filter 0.3s ease-in-out;
 }
@@ -25,10 +34,10 @@ html {
 /* Dashboard Overlay */
 #dashboard {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 90%;
     background: rgba(255, 255, 255, 0.7);
     display: flex;
     flex-direction: column;
@@ -75,6 +84,25 @@ html {
     z-index: 3;
 }
 
+/*Go Back Button*/
+.goback-btn {
+    position: absolute;
+    top: 85px;
+    left: 60px;
+    background: none;
+    color: black;
+    border: solid 2px black;
+    border-radius: 50%;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 0.3%;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Dashboard Content Layout */
 .dashboard-content {
     display: flex;
@@ -90,6 +118,7 @@ html {
     flex-direction: column;
     gap: 20px;
     flex: 1;
+    justify-content: center;
 }
 
 /* Individual Cards */
@@ -108,6 +137,7 @@ html {
 .card-content {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 15px;
 }
 
