@@ -231,20 +231,32 @@ const green_light = document.querySelector(".fanaraki #green_light");
 document.addEventListener("keydown", function (event) {
   switch (event.key) {
     case "r":
-      red_light.backgroundColor = "red";
-      // Add your code here to handle the R key press
+      red_light.style.backgroundColor = "red";
       break;
     case "o":
-      orange_light.backgroundColor = "orange";
-      // Add your code here to handle the O key press
+      orange_light.style.backgroundColor = "orange";
       break;
     case "g":
-      green_light.backgroundColor = "green";
-      // Add your code here to handle the G key press
+      green_light.style.backgroundColor = "green";
       break;
     default:
       console.log(`Key ${event.key} was pressed!`);
-      // Add your code here to handle other key presses
+      break;
+  }
+});
+
+document.addEventListener("keyup", function (event) {
+  switch (event.key) {
+    case "r":
+      red_light.style.backgroundColor = "gray";
+      break;
+    case "o":
+      orange_light.style.backgroundColor = "gray";
+      break;
+    case "g":
+      green_light.style.backgroundColor = "gray";
+      break;
+    default:
       break;
   }
 });
