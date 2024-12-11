@@ -124,11 +124,11 @@ html {
     flex-direction: column;
     gap: 20px;
     flex: 1;
-    justify-content: center;
+    justify-content: space-between;
 }
 
 /* Individual Cards */
-.card {
+.karta {
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -140,7 +140,7 @@ html {
     height: 150px;
 }
 
-.card-content {
+.karta-content {
     display: flex;
     align-items: center;
     justify-content: center;
