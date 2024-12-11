@@ -1,240 +1,278 @@
 /* General Reset */
 body,
 html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .navbar {
-    border-bottom: 1px solid white;
-    width: 100%;
-    background-color: black;
+  border-bottom: 1px solid white;
+  width: 100%;
+  background-color: black;
 }
 
 /* Map Container */
 .map-container {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 
-    position: relative;
+  position: relative;
 }
 
 #map {
-
-    width: 100%;
-    height: calc(100% - 73px);
-    position: absolute;
-    bottom: 0;
-    z-index: 1;
-    transition: filter 0.3s ease-in-out;
+  width: 100%;
+  height: calc(100% - 73px);
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  transition: filter 0.3s ease-in-out;
 }
 
 /* Map Blur Effect */
 .map-blurred {
-    filter: blur(5px);
+  filter: blur(5px);
 }
 
 /* Dashboard Overlay */
 #dashboard {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 73px);
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: all 0.3s ease-in-out;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 73px);
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.3s ease-in-out;
 }
 
 #dashboard.visible {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Close Button */
 .close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: red;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 
 /* Open Dashboard Button */
 .map-btn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background: blue;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    z-index: 1000;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: blue;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 1000;
 }
 
 /*Go Back Button*/
 .goback-btn {
-    position: absolute;
-    top: 85px;
-    left: 60px;
-    background: none;
-    color: black;
-    border: solid 2px black;
-    border-radius: 50%;
-    padding-left: 1%;
-    padding-right: 1%;
-    padding-bottom: 0.3%;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 85px;
+  left: 60px;
+  background: none;
+  color: black;
+  border: solid 2px black;
+  border-radius: 50%;
+  padding-left: 1%;
+  padding-right: 1%;
+  padding-bottom: 0.3%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Dashboard Content Layout */
 .dashboard-content {
-    display: flex;
-    flex-direction: row;
-    width: 80%;
-    justify-content: space-between;
-    gap: 20px;
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
 /* Left Column (Cards) */
 .left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    flex: 1;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  justify-content: space-between;
 }
 
 /* Individual Cards */
 .karta {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    height: 150px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  height: 150px;
 }
 
 .karta-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 }
 
 .icon {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .info {
-    text-align: left;
+  text-align: left;
 }
 
 .info h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #555;
+  margin: 0;
+  font-size: 1.2rem;
+  color: #555;
 }
 
 .info p {
-    margin: 5px 0 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
+  margin: 5px 0 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
 }
 
 /* Diagram Card */
 .diagram-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    flex: 2;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  flex: 2;
 }
 
 .diagram-card canvas {
-    width: 100%;
-    height: 100%;
-    max-height: 300px;
+  width: 100%;
+  height: 100%;
+  max-height: 300px;
 }
 
 .hidden {
-    display: none;
+  display: none;
+}
+
+.traffic-light {
+  transform: scale(0.6);
+}
+.fanaraki {
+  height: 342px;
+  width: 142px;
+  background-color: black;
+  margin: 0 auto;
+}
+
+.imikiklio-panw {
+  width: 142px;
+  height: 142px;
+  background-color: black;
+  border-radius: 100%;
+  position: relative;
+  top: calc(142px / 2);
+  margin: 0 auto;
+}
+
+.imikiklio-katw {
+  width: 142px;
+  height: 142px;
+  background-color: black;
+  border-radius: 100%;
+  position: relative;
+  bottom: calc(142px / 2);
+  margin: 0 auto;
+}
+
+.xrwma {
+  background-color: gray;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  position: relative;
+  left: 30px;
+  margin-bottom: 10%;
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
-    .dashboard-content {
-        flex-direction: column;
-        width: 95%;
-    }
+  .dashboard-content {
+    flex-direction: column;
+    width: 95%;
+  }
 
-    .left-column {
-        flex-direction: row;
-        gap: 5px;
-        justify-content: space-between;
-    }
+  .left-column {
+    flex-direction: row;
+    gap: 5px;
+    justify-content: space-between;
+  }
 
-    .diagram-card {
-        height: 300px;
-    }
+  .diagram-card {
+    height: 300px;
+  }
 }
 
 @media (min-width: 601px) and (max-width: 800px) {
-    .left-column {
-        flex-direction: row;
-        gap: 5px;
-        justify-content: space-between;
-    }
+  .left-column {
+    flex-direction: row;
+    gap: 5px;
+    justify-content: space-between;
+  }
 
-    .diagram-card {
-        height: 315px;
-    }
+  .diagram-card {
+    height: 315px;
+  }
 
-    .dashboard-content {
-        flex-direction: column;
-    }
+  .dashboard-content {
+    flex-direction: column;
+  }
 }
 
 @media (min-width: 801px) and (max-width: 1100px) {
-    .dashboard-content {
-        width: 95%;
-        justify-content: space-between;
-        align-items: center;
-    }
+  .dashboard-content {
+    width: 95%;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .diagram-card {
-        height: 315px;
-    }
-
+  .diagram-card {
+    height: 315px;
+  }
 }
