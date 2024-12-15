@@ -41,7 +41,9 @@ traffic_lights = [
 # Insert junctions and get their IDs
 junction_ids = []
 for lat, lng, title in locations:
-    cur.execute("INSERT INTO junction (latitute, longitude) VALUES (?, ?)", (lat, lng))
+    cur.execute(
+        "INSERT INTO junction (latitute, longitude) VALUES (?, ?,?)", (lat, lng, title)
+    )
     junction_ids.append(cur.lastrowid)
 
 # Generate random data for traffic lights with Gaussian distribution

@@ -9,7 +9,10 @@ cur.execute(
 )
 
 cur.execute(
-    "CREATE TABLE junction(id_diastaurosis INTEGER PRIMARY KEY AUTOINCREMENT, latitute REAL, longitude REAL)"
+    """CREATE TABLE junction(id_diastaurosis INTEGER PRIMARY KEY AUTOINCREMENT,
+    latitute REAL,   
+    longitude REAL,
+    title TEXT)"""
 )
 
 cur.execute(
