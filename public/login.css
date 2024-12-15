@@ -1,0 +1,101 @@
+.log {
+  margin-top: 7%;
+}
+
+.log-admin {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 75%;
+  margin: 3% auto;
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+#message {
+  display: none;
+}
+
+h1 {
+  font-family: inherit;
+  font-weight: 900;
+}
+
+.log-onoma,
+.log-pass {
+  font-size: 2em;
+  margin-bottom: 3%;
+  font-family: inherit;
+  width: 40%;
+  align-self: center;
+}
+
+.log-onoma {
+  margin-top: 1%;
+}
+
+.log-admin input {
+  width: 30%;
+}
+
+.log-admin .button {
+  width: 15%;
+  font-size: 1.5em;
+  background-color: rgb(34, 152, 199);
+  color: black;
+  border: 0.1em solid black;
+}
+
+.mess-alert {
+  background-color: rgb(164, 171, 203);
+  color: black;
+  border: 0.1em solid black;
+  border-radius: 5%;
+  font-size: 1.5em;
+  margin-bottom: 2%;
+  padding: 0.2em;
+  font-family: inherit;
+  width: 30%;
+}
+
+@media screen and (max-width: 800px) {
+  .log-admin input {
+    width: 70%;
+  }
+
+  .mess-alert {
+    width: 70%;
+  }
+
+  .log-admin .button {
+    width: 50%;
+  }
+
+  .edit-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5%;
+  }
+
+  .edit-form {
+    width: 90%;
+    margin: 3% auto;
+  }
+
+  .edit-container img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    flex: 50%;
+    align-self: flex-start;
+  }
+
+  .edit-form.prosthiki-form {
+    margin: 3% auto;
+  }
+
+  .edit-form.prosthiki-form div {
+    width: 100%;
+  }
+}
