@@ -62,6 +62,14 @@
             >
               Sign-Up
             </button>
+
+            <button
+              class="btn btn-outline-light"
+              id="signOutButton"
+              type="submit"
+            >
+              Sign-Out
+            </button>
           </div>
         </div>
       </div>
@@ -233,15 +241,37 @@
 </html>
 
 <script>
+  window.onload = () => {
+    fetch("/check-session")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.signedIn) {
+          document.getElementById("signInButton").style.display = "none";
+          document.getElementById("signUpButton").style.display = "none";
+          document.getElementById("signOutButton").style.display = "block";
+        } else {
+          document.getElementById("signiInButton").style.display = "block";
+          document.getElementById("signUpButton").style.display = "block";
+          document.getElementById("signOutButton").style.display = "none";
+        }
+      });
+  };
+
   document
     .getElementById("signInButton")
     .addEventListener("click", function () {
-      window.location.href = "/signin"; // Replace with the URL for the Sign-In page
+      window.location.href = "/signin";
     });
 
   document
     .getElementById("signUpButton")
     .addEventListener("click", function () {
-      window.location.href = "/signup"; // Replace with the URL for the Sign-Up page
+      window.location.href = "/signup";
+    });
+
+  document
+    .getElementById("signOutButton")
+    .addEventListener("click", function () {
+      window.location.href = "/signout";
     });
 </script>

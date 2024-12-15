@@ -4,17 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
+    <link rel="stylesheet" href="login.css" />
   </head>
 
   <body>
     <div class="log">
-      <form action="/signin" method="post" class="log-admin">
-        <h1>Είσοδος Διαχειριστή</h1>
+      <form action="/signin" method="post" id="loginForm" class="log-admin">
+        <h1>Sign In</h1>
         <input
           type="text"
           name="username"
           class="log-onoma"
-          placeholder="Όνομα χρήστη"
+          placeholder="Username"
           required="required"
           autofocus
         />
@@ -22,15 +23,51 @@
           type="password"
           name="password"
           class="log-pass"
-          placeholder="Κωδικός πρόσβασης"
+          placeholder="Password"
           required="required"
         />
 
-        <!-- {{#if message}}
-        <div class="mess-alert" role="alert">{{message}}</div>
-        {{/if}} -->
-        <button type="submit" class="button">Είσοδος</button>
+        <div class="mess-alert" id="message" role="alert"></div>
+
+        <button type="submit" class="button">Login</button>
       </form>
     </div>
+
+    <script>
+      const loginForm = document.getElementById("loginForm");
+      const messageDiv = document.getElementById("message");
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault(); // Prevent form's default submission
+
+        // Collect form data
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+          // Send POST request to the server
+          const response = await fetch("/signin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // On success, redirect or show success message
+            window.location.href = result.redirectTo || "/";
+          } else {
+            // On failure, display the error message in the div
+            messageDiv.textContent = result.message || "An error occurred.";
+            messageDiv.style.display = "block"; // Show the message
+          }
+        } catch (error) {
+          // Handle unexpected errors
+          messageDiv.textContent = "An unexpected error occurred.";
+          messageDiv.style.display = "block"; // Show the message
+        }
+      });
+    </script>
   </body>
 </html>
