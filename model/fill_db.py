@@ -16,33 +16,34 @@ locations = [
 ]
 
 traffic_lights = [
-    (38.286996, 21.787494, "Φανάρι 1"),
-    (38.286981, 21.787217, "Φανάρι 2"),
-    (38.286845, 21.787206, "Φανάρι 3"),
-    (38.286805, 21.787362, "Φανάρι 4"),
-    (38.286471, 21.774371, "Φανάρι 1"),
-    (38.286327, 21.774394, "Φανάρι 2"),
-    (38.286299, 21.774248, "Φανάρι 3"),
-    (38.286403, 21.774191, "Φανάρι 4"),
-    (38.282501, 21.771518, "Φανάρι 1"),
-    (38.282539, 21.771629, "Φανάρι 2"),
-    (38.282639, 21.771593, "Φανάρι 3"),
-    (38.282608, 21.771444, "Φανάρι 4"),
-    (38.302139, 21.780937, "Φανάρι 1"),
-    (38.301965, 21.780922, "Φανάρι 2"),
-    (38.301972, 21.780745, "Φανάρι 3"),
-    (38.302097, 21.780763, "Φανάρι 4"),
-    (38.289115, 21.768258, "Φανάρι 1"),
-    (38.288937, 21.768398, "Φανάρι 2"),
-    (38.289063, 21.768091, "Φανάρι 3"),
-    (38.288906, 21.768098, "Φανάρι 4"),
+    (38.286996, 21.787494, "Φανάρι 1", 1),
+    (38.286981, 21.787217, "Φανάρι 2", 1),
+    (38.286845, 21.787206, "Φανάρι 3", 1),
+    (38.286805, 21.787362, "Φανάρι 4", 1),
+    (38.286471, 21.774371, "Φανάρι 1", 2),
+    (38.286327, 21.774394, "Φανάρι 2", 2),
+    (38.286299, 21.774248, "Φανάρι 3", 2),
+    (38.286403, 21.774191, "Φανάρι 4", 2),
+    (38.282501, 21.771518, "Φανάρι 1", 3),
+    (38.282539, 21.771629, "Φανάρι 2", 3),
+    (38.282639, 21.771593, "Φανάρι 3", 3),
+    (38.282608, 21.771444, "Φανάρι 4", 3),
+    (38.302139, 21.780937, "Φανάρι 1", 4),
+    (38.301965, 21.780922, "Φανάρι 2", 4),
+    (38.301972, 21.780745, "Φανάρι 3", 4),
+    (38.302097, 21.780763, "Φανάρι 4", 4),
+    (38.289115, 21.768258, "Φανάρι 1", 5),
+    (38.288937, 21.768398, "Φανάρι 2", 5),
+    (38.289063, 21.768091, "Φανάρι 3", 5),
+    (38.288906, 21.768098, "Φανάρι 4", 5),
 ]
 
 # Insert junctions and get their IDs
 junction_ids = []
 for lat, lng, title in locations:
     cur.execute(
-        "INSERT INTO junction (latitute, longitude, title) VALUES (?, ?,?)", (lat, lng, title)
+        "INSERT INTO junction (latitute, longitude,title) VALUES (?, ?,?)",
+        (lat, lng, title),
     )
     junction_ids.append(cur.lastrowid)
 
@@ -57,7 +58,7 @@ start_time = end_time - timedelta(weeks=1)
 current_time = start_time
 
 while current_time <= end_time:
-    for idx, (lat, lng, title) in enumerate(traffic_lights):
+    for lat, lng, title, junction_id in traffic_lights:
         waiting_cars = max(
             0, int(np.random.normal(mean_waiting_cars, stddev_waiting_cars))
         )
@@ -67,9 +68,7 @@ while current_time <= end_time:
             "INSERT INTO traffic_light (id_traffic_light, id_diastaurosis, latitute, longitude, date, time, waiting_cars, violations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 id_traffic_light,
-                junction_ids[
-                    idx % len(junction_ids)
-                ],  # Assign junction ID in a round-robin fashion
+                junction_id,  # Assign junction ID in a round-robin fashion
                 lat,
                 lng,
                 current_time.date().isoformat(),
