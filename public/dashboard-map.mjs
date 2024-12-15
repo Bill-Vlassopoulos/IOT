@@ -1,3 +1,8 @@
+
+
+
+let lastclickedtrafficlight = {};
+
 //Initialize the map
 document.addEventListener("DOMContentLoaded", function () {
   var map = L.map("map").setView([38.266639, 21.798573], 13); // Coordinates for Patras, Greece
@@ -15,19 +20,13 @@ document.addEventListener("DOMContentLoaded", function () {
     shadowSize: [41, 41],
   });
 
-  // var redIcon = L.icon({
-  //     iconUrl: 'pngwing.com.png',
-  //     iconSize: [25, 41],
-  //     iconAnchor: [12, 41],
-  //     popupAnchor: [1, -34],
-  //     shadowSize: [41, 41]
-  // });
+
 
   var trafficLightIcon = L.icon({
     iconUrl: "traffic-light.png",
     iconSize: [25, 30], // Adjust the size as needed
     iconAnchor: [7, 30],
-    popupAnchor: [1, -25],
+    popupAnchor: [4, -30],
     shadowSize: [25, 25],
   });
 
@@ -119,6 +118,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .on("click", function () {
               // Show the dashboard button when a traffic light is clicked
               dashboardbtn.classList.remove("hidden");
+              lastclickedtrafficlight = {
+                junction: index,
+                trafficlight: trafficLightsData[index].indexOf(tl),
+              }
+
             });
           trafficLightMarkers.push(tlMarker);
         });
@@ -161,6 +165,7 @@ const goBackButton = document.getElementById("goBack");
 
 // Show the dashboard
 openDashboardBtn.addEventListener("click", () => {
+  console.log(lastclickedtrafficlight);
   dashboard.classList.add("visible");
   mapElement.classList.add("map-blurred");
   openDashboardBtn.classList.add("hidden");
@@ -180,30 +185,46 @@ document.getElementById("waiting-cars").textContent = 12; // Example: Fetch live
 document.getElementById("violations").textContent = 5; // Example: Fetch live data here
 
 // Traffic Data for the Day
+const currentTime = new Date();
+const currentHour = currentTime.getHours();
+const currentMinutes = currentTime.getMinutes();
+const currentLabel = `${currentHour}:${currentMinutes < 10 ? '0' : ''}${currentMinutes}`;
+
 const trafficData = {
-  labels: ["6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM"],
+  labels: Array.from({ length: 24 * 30 }, (_, i) => {
+    const hour = Math.floor(i / 30);
+    const minute = (i % 30) * 2;
+    return `${hour}:${minute < 10 ? '0' : ''}${minute}`;
+  }),
   datasets: [
     {
-      label: "Cars Passed",
-      data: [50, 100, 150, 130, 80, 30],
-      backgroundColor: "rgba(54, 162, 235, 0.6)",
-      borderColor: "rgba(54, 162, 235, 1)",
+      label: "Cars Waiting (Today)",
+      data: Array.from({ length: (currentHour * 30) + Math.floor(currentMinutes / 2) + 1 }, () => Math.floor(Math.random() * 25) + 5).concat(Array((24 * 30) - ((currentHour * 30) + Math.floor(currentMinutes / 2) + 1)).fill(null)), // Example data, update with real-time data
+      backgroundColor: "rgba(255, 128, 102, 0.6)",
+      borderColor: "rgb(255, 128, 102)",
       borderWidth: 2,
+      pointRadius: 0, // Remove the dots
     },
     {
-      label: "Cars Waiting",
-      data: [20, 30, 40, 35, 25, 10],
-      backgroundColor: "rgba(255, 99, 132, 0.6)",
-      borderColor: "rgba(255, 99, 132, 1)",
+      label: "Average Cars Waiting (Previous Weeks)",
+      data: Array.from({ length: 24 * 30 }, () => Math.floor(Math.random() * 25) + 5), // Example data, update with historical data
+      backgroundColor: "rgba(169, 169, 169, 0.6)",
+      borderColor: "rgba(169, 169, 169, 0.64)",
       borderWidth: 2,
+      pointRadius: 0, // Remove the dots
     },
   ],
 };
 
+const waiting_cars = document.getElementById("waiting-cars");
+const violations = document.getElementById("violations");
+// console.log(trafficData.datasets[0].data[(currentHour * 30) + Math.floor(currentMinutes / 2)]);
+waiting_cars.textContent = trafficData.datasets[0].data[(currentHour * 30) + Math.floor(currentMinutes / 2)];
+
 // Configure Chart.js
 const ctx = document.getElementById("trafficChart").getContext("2d");
 new Chart(ctx, {
-  type: "bar",
+  type: "line",
   data: trafficData,
   options: {
     responsive: true,
@@ -216,7 +237,28 @@ new Chart(ctx, {
         beginAtZero: true,
       },
     },
+    plugins: {
+      zoom: {
+        pan: {
+          enabled: true, // Enable panning
+          mode: 'xy', // Allow horizontal panning only
+          // modifierKey: 'shift', // Optional: Require holding Shift to pan
+        },
+        zoom: {
+          wheel: {
+            enabled: true, // Enable zooming with mouse wheel
+            mode: 'x', // Zoom horizontally
+          },
+          pinch: {
+            enabled: true, // Enable zooming with pinch gestures
+            mode: 'x', // Zoom horizontally
+          },
+          mode: 'x', // Overall zoom mode
+        },
+      },
+    },
   },
+
 });
 
 // const fanaraki = document.querySelector(".fanaraki ");
@@ -260,3 +302,7 @@ document.addEventListener("keyup", function (event) {
       break;
   }
 });
+
+
+
+
