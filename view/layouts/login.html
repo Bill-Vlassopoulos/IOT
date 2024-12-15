@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+
+  <body>
+    <div class="log">
+      <form action="/signin" method="post" class="log-admin">
+        <h1>Είσοδος Διαχειριστή</h1>
+        <input
+          type="text"
+          name="username"
+          class="log-onoma"
+          placeholder="Όνομα χρήστη"
+          required="required"
+          autofocus
+        />
+        <input
+          type="password"
+          name="password"
+          class="log-pass"
+          placeholder="Κωδικός πρόσβασης"
+          required="required"
+        />
+
+        <!-- {{#if message}}
+        <div class="mess-alert" role="alert">{{message}}</div>
+        {{/if}} -->
+        <button type="submit" class="button">Είσοδος</button>
+      </form>
+    </div>
+  </body>
+</html>

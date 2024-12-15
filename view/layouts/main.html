@@ -48,8 +48,20 @@
           </ul>
 
           <div class="ms-auto">
-            <button class="btn btn-outline-light" type="submit">Sign-In</button>
-            <button class="btn btn-outline-light" type="submit">Sign-Up</button>
+            <button
+              class="btn btn-outline-light"
+              id="signInButton"
+              type="submit"
+            >
+              Sign-In
+            </button>
+            <button
+              class="btn btn-outline-light"
+              id="signUpButton"
+              type="submit"
+            >
+              Sign-Up
+            </button>
           </div>
         </div>
       </div>
@@ -219,3 +231,17 @@
     ></script>
   </body>
 </html>
+
+<script>
+  document
+    .getElementById("signInButton")
+    .addEventListener("click", function () {
+      window.location.href = "/signin"; // Replace with the URL for the Sign-In page
+    });
+
+  document
+    .getElementById("signUpButton")
+    .addEventListener("click", function () {
+      window.location.href = "/signup"; // Replace with the URL for the Sign-Up page
+    });
+</script>
