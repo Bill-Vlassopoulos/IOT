@@ -15,8 +15,8 @@ export function gettrafficlights(id_diastaurosis) {
 }
 
 export function getlasttrafficInfo(id_diastaurosis, id_traffic_light) {
-    const stmt = sql.prepare("SELECT * FROM traffic_light WHERE id_diastaurosis = ? AND id_traffic_light = ? ORDER BY time,day DESC LIMIT 1");
-    return stmt.all(id_diastaurosis, id_traffic_light);
-
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+    const stmt = sql.prepare("SELECT * FROM traffic_light WHERE id_diastaurosis = ? AND id_traffic_light = ? AND date = ? ORDER BY time ASC");
+    return stmt.all(id_diastaurosis, id_traffic_light, currentDate);
 }
 
