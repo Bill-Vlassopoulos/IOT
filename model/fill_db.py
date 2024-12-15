@@ -42,7 +42,7 @@ traffic_lights = [
 junction_ids = []
 for lat, lng, title in locations:
     cur.execute(
-        "INSERT INTO junction (latitute, longitude) VALUES (?, ?,?)", (lat, lng, title)
+        "INSERT INTO junction (latitute, longitude, title) VALUES (?, ?,?)", (lat, lng, title)
     )
     junction_ids.append(cur.lastrowid)
 
