@@ -115,6 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             lastClickedMarker = marker;
             map.flyTo([location.lat, location.lng], 18);
+            currentJunctionId = location.id;
+            console.log("Current Junction ID:", currentJunctionId);
 
             // Fetch traffic lights for this junction
             fetch(`/api/traffic-lights/${location.id}`)
@@ -143,6 +145,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         junction: location.id,
                         trafficLight: tl.id,
                       };
+
+                      currentTrafficLightId = tl.id;
+                      console.log(
+                        "Current Traffic Light ID:",
+                        currentTrafficLightId
+                      );
                     });
                   trafficLightMarkers.push(tlMarker);
                 });
@@ -233,7 +241,7 @@ const goBackButton = document.getElementById("goBack");
 // Show the dashboard
 openDashboardBtn.addEventListener("click", () => {
   console.log(lastclickedtrafficlight);
-  fetchTrafficDataAndUpdateDashboard();
+  fetchTrafficDataAndUpdateDashboard(currentJunctionId, currentTrafficLightId);
   dashboard.classList.add("visible");
   mapElement.classList.add("map-blurred");
   openDashboardBtn.classList.add("hidden");
@@ -348,75 +356,27 @@ closeDashboardBtn.addEventListener("click", () => {
 // const orange_light = fanaraki(":nth-child(2)");
 // const green_light = fanaraki(":nth-child(3)");
 
-function fetchTrafficDataAndUpdateDashboard() {
-  const junctionId = 1; // Replace with dynamic junction ID if needed
-  const trafficLightId = 1; // Replace with dynamic traffic light ID if needed
-
-  // Fetch traffic info from the API
+function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
+  // Fetch traffic info from the backend
   fetch(`/api/traffic-info/${junctionId}/${trafficLightId}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        const trafficInfo = data.data;
+        const trafficInfo = data.data; // Array of traffic data for the traffic light
 
-        // Update the waiting cars and violations based on the fetched data
-        const waitingCars = trafficInfo.length; // Example: Count of traffic info entries
-        document.getElementById("waiting-cars").textContent = waitingCars;
+        // Update waiting cars: Get the most recent data entry for waiting cars
+        if (trafficInfo.length > 0) {
+          const lastTrafficData = trafficInfo[trafficInfo.length - 1];
+          const waitingCars = lastTrafficData.waiting_cars;
+          document.getElementById("waiting-cars").textContent = waitingCars;
+        }
 
-        // Example: Set violations (you might want to customize this)
-        const violations = trafficInfo.filter((t) => t.violation).length; // Filter based on your violation condition
-        document.getElementById("violations").textContent = violations;
-
-        // You can also update the chart dynamically based on the fetched data
-        const currentTime = new Date();
-        const currentHour = currentTime.getHours();
-        const currentMinutes = currentTime.getMinutes();
-        const currentLabel = `${currentHour}:${
-          currentMinutes < 10 ? "0" : ""
-        }${currentMinutes}`;
-
-        // Update the traffic chart dataset with real-time data
-        trafficData.datasets[0].data[
-          currentHour * 30 + Math.floor(currentMinutes / 2)
-        ] = waitingCars;
-
-        // Update chart to reflect the changes
-        const ctx = document.getElementById("trafficChart").getContext("2d");
-        new Chart(ctx, {
-          type: "line",
-          data: trafficData,
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                beginAtZero: true,
-              },
-              y: {
-                beginAtZero: true,
-              },
-            },
-            plugins: {
-              zoom: {
-                pan: {
-                  enabled: true, // Enable panning
-                  mode: "xy", // Allow horizontal panning only
-                },
-                zoom: {
-                  wheel: {
-                    enabled: true, // Enable zooming with mouse wheel
-                    mode: "x", // Zoom horizontally
-                  },
-                  pinch: {
-                    enabled: true, // Enable zooming with pinch gestures
-                    mode: "x", // Zoom horizontally
-                  },
-                  mode: "x", // Overall zoom mode
-                },
-              },
-            },
-          },
-        });
+        // Update violations: Sum all violations for the day (assuming violation is an integer field)
+        const totalViolations = trafficInfo.reduce(
+          (sum, t) => sum + (t.violations || 0),
+          0
+        ); // Sum violations
+        document.getElementById("violations").textContent = totalViolations;
       } else {
         console.log("Error fetching traffic data:", data.message);
       }
@@ -426,6 +386,56 @@ function fetchTrafficDataAndUpdateDashboard() {
     });
 }
 
+// Function to update the traffic chart with the new waiting cars data
+function updateTrafficChart(waitingCars) {
+  // Assuming trafficData is already defined globally for the chart
+  const currentTime = new Date();
+  const currentHour = currentTime.getHours();
+  const currentMinutes = currentTime.getMinutes();
+
+  // Update the chart's dataset with the new waiting cars value at the current time slot
+  trafficData.datasets[0].data[
+    currentHour * 30 + Math.floor(currentMinutes / 2)
+  ] = waitingCars;
+
+  // Re-render the chart with the updated data
+  const ctx = document.getElementById("trafficChart").getContext("2d");
+  new Chart(ctx, {
+    type: "line",
+    data: trafficData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          beginAtZero: true,
+        },
+        y: {
+          beginAtZero: true,
+        },
+      },
+      plugins: {
+        zoom: {
+          pan: {
+            enabled: true, // Enable panning
+            mode: "xy", // Allow horizontal panning only
+          },
+          zoom: {
+            wheel: {
+              enabled: true, // Enable zooming with mouse wheel
+              mode: "x", // Zoom horizontally
+            },
+            pinch: {
+              enabled: true, // Enable zooming with pinch gestures
+              mode: "x", // Zoom horizontally
+            },
+            mode: "x", // Overall zoom mode
+          },
+        },
+      },
+    },
+  });
+}
 const red_light = document.querySelector(".fanaraki #red_light");
 const orange_light = document.querySelector(".fanaraki #orange_light");
 const green_light = document.querySelector(".fanaraki #green_light");

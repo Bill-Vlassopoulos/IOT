@@ -99,6 +99,7 @@ app.get("/api/traffic-info/:junction_id/:traffic_light_id", (req, res) => {
       success: true,
       data: trafficInfo,
     });
+    console.log("Traffic Info:", trafficInfo);
   } else {
     res.json({
       success: false,

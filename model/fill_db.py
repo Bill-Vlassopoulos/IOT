@@ -50,8 +50,8 @@ for lat, lng, title in locations:
 # Generate random data for traffic lights with Gaussian distribution
 mean_waiting_cars = 25
 stddev_waiting_cars = 10
-mean_violations = 5
-stddev_violations = 2
+mean_violations = 1
+stddev_violations = 1
 
 end_time = datetime.now()
 start_time = end_time - timedelta(weeks=1)
