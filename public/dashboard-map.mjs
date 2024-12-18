@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     icon: trafficLightIcon,
                   })
                     .addTo(map)
-                    .bindPopup(`Traffic Light ID: ${tl.id}`) // Customize this as needed
+                    .bindPopup(` ${tl.title}`) // Customize this as needed
                     .on("click", function () {
                       // Show the dashboard button when a traffic light is clicked
                       dashboardbtn.classList.remove("hidden");
@@ -361,24 +361,29 @@ function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
   fetch(`/api/traffic-info/${junctionId}/${trafficLightId}`)
     .then((response) => response.json())
     .then((data) => {
+      console.log(data);
       if (data.success) {
         const trafficInfo = data.data; // Array of traffic data for the traffic light
 
         // Update waiting cars: Get the most recent data entry for waiting cars
-        if (trafficInfo.length > 0) {
-          const lastTrafficData = trafficInfo[trafficInfo.length - 1];
-          const waitingCars = lastTrafficData.waiting_cars;
-          document.getElementById("waiting-cars").textContent = waitingCars;
-        }
+        // if (trafficInfo.length > 0) {
+        //   const lastTrafficData = trafficInfo[trafficInfo.length - 1];
+        //   const waitingCars = lastTrafficData.waiting_cars;
+        //   document.getElementById("waiting-cars").textContent = waitingCars;
+        // }
+        console.log(trafficInfo);
+        document.getElementById("waiting-cars").textContent = trafficInfo["waiting-cars"];
 
         // Update violations: Sum all violations for the day (assuming violation is an integer field)
-        const totalViolations = trafficInfo.reduce(
-          (sum, t) => sum + (t.violations || 0),
-          0
-        ); // Sum violations
-        document.getElementById("violations").textContent = totalViolations;
-      } else {
-        console.log("Error fetching traffic data:", data.message);
+        //   const totalViolations = trafficInfo.reduce(
+        //     (sum, t) => sum + (t.violations || 0),
+        //     0
+        //   ); // Sum violations
+        //   document.getElementById("violations").textContent = totalViolations;
+        // } else {
+        //   console.log("Error fetching traffic data:", data.message);
+        // }
+        document.getElementById("violations").textContent = trafficInfo["violations"];
       }
     })
     .catch((error) => {

@@ -64,7 +64,7 @@ app.get("/signout", logInController.doLogout);
 app.get("/api/junctions", async (req, res) => {
   try {
     const response = await axios.get(
-      "http://150.140.186.118:1026/v2/entities?type=v1_omada14_diastavrosi"
+      "http://150.140.186.118:1026/v2/entities?type=v2_omada14_diastavrosi"
     );
     let cb_data = JSON.stringify(response.data);
     // console.log(response.data);
@@ -95,10 +95,27 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     let cb_data_junction = JSON.stringify(junction.data);
     cb_data_junction = JSON.parse(cb_data_junction);
     //console.log(cb_data_junction);
+    let trafficlightsinfo;
+    for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
+      const trafficLight = await axios.get("http://150.140.186.118:1026/v2/entities?id=" + cb_data_junction.fanaria.value[i]);
+      let cb_data_trafficlight = JSON.stringify(trafficLight.data);
+      cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
+      // console.log(cb_data_trafficlight);
+      // console.log(cb_data_trafficlight[0].id);
+      // console.log(cb_data_trafficlight[0].location.value.coordinates);
+      // console.log(cb_data_trafficlight[0].title.value);
+      if (!trafficlightsinfo) {
+        trafficlightsinfo = [];
+      }
+      trafficlightsinfo.push({
+        id: cb_data_trafficlight[0].id,
+        lat: cb_data_trafficlight[0].location.value.coordinates[0],
+        lng: cb_data_trafficlight[0].location.value.coordinates[1],
+        title: cb_data_trafficlight[0].title.value,
+      });
 
-    // for(let i=0; i<cb_data_junction.fanaria.value.length; i++){
-    //   const trafficLight = await axios.get("http://150.140.186.118:1026/v2/entities?id="+cb_data_junction.fanaria.value[i]);
-
+    }
+    res.json({ trafficLights: trafficlightsinfo });
     //res.json({ junctions: formattedJunctions });
   } catch (error) {
     console.error("Error fetching junctions from context broker:", error);
@@ -116,26 +133,33 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
 });
 
 // API to fetch live traffic data for a specific junction and traffic light
-app.get("/api/traffic-info/:junction_id/:traffic_light_id", (req, res) => {
+app.get("/api/traffic-info/:junction_id/:traffic_light_id", async (req, res) => {
   const junctionId = req.params.junction_id;
   const trafficLightId = req.params.traffic_light_id;
 
   // Call the query to get traffic info
-  const trafficInfo = getlasttrafficInfo(junctionId, trafficLightId);
+  // const trafficInfo = getlasttrafficInfo(junctionId, trafficLightId);
+  let dashboardinfo;
+  dashboardinfo = await axios.get(`http://150.140.186.118:1026/v2/entities/${req.params.traffic_light_id}`);
+  let cb_data_dashboard = JSON.stringify(dashboardinfo.data);
+  cb_data_dashboard = JSON.parse(cb_data_dashboard);
+  // console.log(cb_data_dashboard.waitingCars.value, cb_data_dashboard.violations.value);
+  let trafficInfo = { "waiting-cars": cb_data_dashboard.waitingCars.value, "violations": cb_data_dashboard.violations.value };
+
 
   // If traffic data exists, send it as a response
-  if (trafficInfo.length > 0) {
-    res.json({
-      success: true,
-      data: trafficInfo,
-    });
-    console.log("Traffic Info:", trafficInfo);
-  } else {
-    res.json({
-      success: false,
-      message: "No traffic data available for this traffic light.",
-    });
-  }
+
+  res.json({
+    success: true,
+    data: trafficInfo,
+  });
+  console.log("Traffic Info:", trafficInfo);
+  // } else {
+  //   res.json({
+  //     success: false,
+  //     message: "No traffic data available for this traffic light.",
+  //   });
+  // }
 });
 
 app.listen(PORT, () => {
