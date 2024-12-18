@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
 import express from "express";
+import axios from "axios";
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -60,16 +63,30 @@ app.get("/check-session", (req, res) => {
 app.get("/signout", logInController.doLogout);
 
 // API to fetch all junctions
-app.get("/api/junctions", (req, res) => {
-  const junctions = getalljunctions();
-  const formattedJunctions = junctions.map((junction) => ({
-    id: junction.id_diastaurosis,
-    lat: junction.latitute,
-    lng: junction.longitude,
-    title: junction.title,
-  }));
-  res.json({ junctions: formattedJunctions });
-  // console.log("Junctions:", formattedJunctions);
+app.get("/api/junctions", async (req, res) => {
+  try {
+    const response = await axios.get("http://150.140.186.118:1026/v2/entities?type=v1_omada14_diastavrosi")//, {
+    //   headers: { "Content-Type": "application/json" },
+    // });
+    let cb_data = JSON.stringify(response.data);
+    // console.log(response.data);
+    cb_data = JSON.parse(cb_data);
+    // cb_data = cb_data.filter((entity) => entity.type === "");
+    console.log(cb_data);
+
+
+    // const formattedJunctions = junctions.map((junction) => ({
+    //   id: junction.id,
+    //   lat: junction.location.value.coordinates[0],
+    //   lng: junction.location.value.coordinates[1],
+    //   title: junction.title.value,
+    // }));
+
+    // res.json({ junctions: formattedJunctions });
+  } catch (error) {
+    console.error("Error fetching junctions from context broker:", error);
+    res.status(500).json({ message: "Error fetching junctions" });
+  }
 });
 
 // API to fetch traffic lights for a specific junction

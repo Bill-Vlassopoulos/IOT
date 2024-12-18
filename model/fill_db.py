@@ -77,7 +77,7 @@ while current_time <= end_time:
                 violations,
             ),
         )
-    current_time += timedelta(seconds=3)
+    current_time += timedelta(seconds=30 * 60)
 
 con.commit()
 con.close()
