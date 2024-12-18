@@ -1,9 +1,7 @@
 import requests
 
 url = "http://150.140.186.118:1026/v2/entities"
-headers = {
-    "Content-Type": "application/json"
-}
+headers = {"Content-Type": "application/json"}
 
 juction_locations = [
     (38.28689, 21.787373, "Διαστάρωση Πανεπιστημίου Πατρών"),
@@ -36,98 +34,85 @@ traffic_lights = [
     (38.288906, 21.768098, "Φανάρι 4", 5),
 ]
 
-fanari_id=0
-max_diastavroseis=5
+fanari_id = 0
+max_diastavroseis = 5
 
-for diastavrosi_id in range(0,max_diastavroseis):
-    lista_apo_fanaria=[]
-    for i in range(0,4):
-        lista_apo_fanaria.append("v1_omada14_fanari_"+str(fanari_id))
+for diastavrosi_id in range(0, max_diastavroseis):
+    lista_apo_fanaria = []
+    for i in range(0, 4):
+        lista_apo_fanaria.append("v1_omada14_fanari_" + str(fanari_id))
         #### fanari creation
         data = {
-            "id": "v1_omada14_fanari_"+str(fanari_id),
+            "id": "v1_omada14_fanari_" + str(fanari_id),
             "type": "TrafficLight",
-             "title": {
-                "type": "Text",
-                "value": "Main Street Traffic Light Schedule"
-            },
+            "title": {"type": "Text", "value": traffic_lights[fanari_id][2]},
             "location": {
                 "type": "geo:json",
                 "value": {
-                "type": "Point",
-                "coordinates": [23.740, 37.975]
-             }
-         },
+                    "type": "Point",
+                    "coordinates": [
+                        traffic_lights[fanari_id][0],
+                        traffic_lights[fanari_id][1],
+                    ],
+                },
+            },
             "waitingCars": {
                 "type": "Integer",
-                "value": 15, 
+                "value": 15,
                 "metadata": {
-                "timestamp": {
-                "type": "DateTime",
-                "value": "2024-12-17T15:30:00Z"
-         }
-        }
-    },
-             "waitingPedestrians": {
+                    "timestamp": {"type": "DateTime", "value": "2024-12-17T15:30:00Z"}
+                },
+            },
+            "waitingPedestrians": {
                 "type": "Integer",
-                "value": 2, 
+                "value": 2,
                 "metadata": {
-                "timestamp": {
-                "type": "DateTime",
-                "value": "2024-12-17T15:30:00Z"
-        }
-    }
-  },
-             "schedule": {
+                    "timestamp": {"type": "DateTime", "value": "2024-12-17T15:30:00Z"}
+                },
+            },
+            "schedule": {
                 "type": "StructuredValue",
                 "value": [
-                {
-                    "phase": "Green",
-                    "startTime": "2024-12-17T15:30:00Z",
-                    "endTime": "2024-12-17T15:30:30Z"
-                },
-                {
-                    "phase": "Orange",
-                    "startTime": "2024-12-17T15:30:30Z",
-                    "endTime": "2024-12-17T15:30:35Z"
-                },
-                {
-                    "phase": "Red",
-                    "startTime": "2024-12-17T15:30:35Z",
-                    "endTime": "2024-12-17T15:31:00Z"
-                }
-                ]
-            }
-
-}
+                    {
+                        "phase": "Green",
+                        "startTime": "2024-12-17T15:30:00Z",
+                        "endTime": "2024-12-17T15:30:30Z",
+                    },
+                    {
+                        "phase": "Orange",
+                        "startTime": "2024-12-17T15:30:30Z",
+                        "endTime": "2024-12-17T15:30:35Z",
+                    },
+                    {
+                        "phase": "Red",
+                        "startTime": "2024-12-17T15:30:35Z",
+                        "endTime": "2024-12-17T15:31:00Z",
+                    },
+                ],
+            },
+        }
 
         response = requests.post(url, json=data, headers=headers)
         print(response.text)
         ####
 
-        fanari_id+=1
+        fanari_id += 1
     data = {
-        "id": "v1_omada14_diastavrosi_"+str(diastavrosi_id),
+        "id": "v1_omada14_diastavrosi_" + str(diastavrosi_id),
         "type": "v1_omada14_diastavrosi",
-         "title": {
-            "type": "Text",
-            "value": "Main Street Traffic Light Schedule"
-        },
-        "fanaria":{"type":"list",
-                   "value":lista_apo_fanaria},
+        "title": {"type": "Text", "value": juction_locations[diastavrosi_id][2]},
+        "fanaria": {"type": "list", "value": lista_apo_fanaria},
         "location": {
             "type": "geo:json",
             "value": {
                 "type": "Point",
-                "coordinates": [23.740, 37.975]
-            }
+                "coordinates": [
+                    juction_locations[diastavrosi_id][0],
+                    juction_locations[diastavrosi_id][1],
+                ],
+            },
         },
-        "period": {
-        "type": "StructuredValue",
-        "value": {
-        "duration": "PT60S"
-        }
-    }
+        "period": {"type": "StructuredValue", "value": {"duration": "PT60S"}},
     }
 
     response = requests.post(url, json=data, headers=headers)
