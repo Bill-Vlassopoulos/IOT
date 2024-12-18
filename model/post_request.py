@@ -1,5 +1,7 @@
 import requests
 
+# http://150.140.186.118:1026/v2/entities/v1_omada14_fanari_0
+
 url = "http://150.140.186.118:1026/v2/entities"
 headers = {"Content-Type": "application/json"}
 
