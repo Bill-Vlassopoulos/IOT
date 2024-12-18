@@ -8,8 +8,6 @@ import path from "path";
 import express from "express";
 import axios from "axios";
 
-
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -65,24 +63,22 @@ app.get("/signout", logInController.doLogout);
 // API to fetch all junctions
 app.get("/api/junctions", async (req, res) => {
   try {
-    const response = await axios.get("http://150.140.186.118:1026/v2/entities?type=v1_omada14_diastavrosi")//, {
-    //   headers: { "Content-Type": "application/json" },
-    // });
+    const response = await axios.get(
+      "http://150.140.186.118:1026/v2/entities?type=v1_omada14_diastavrosi"
+    );
     let cb_data = JSON.stringify(response.data);
     // console.log(response.data);
     cb_data = JSON.parse(cb_data);
-    // cb_data = cb_data.filter((entity) => entity.type === "");
-    console.log(cb_data);
+    //console.log(cb_data);
 
+    const formattedJunctions = cb_data.map((junction) => ({
+      id: junction.id,
+      lat: junction.location.value.coordinates[0],
+      lng: junction.location.value.coordinates[1],
+      title: junction.title.value,
+    }));
 
-    // const formattedJunctions = junctions.map((junction) => ({
-    //   id: junction.id,
-    //   lat: junction.location.value.coordinates[0],
-    //   lng: junction.location.value.coordinates[1],
-    //   title: junction.title.value,
-    // }));
-
-    // res.json({ junctions: formattedJunctions });
+    res.json({ junctions: formattedJunctions });
   } catch (error) {
     console.error("Error fetching junctions from context broker:", error);
     res.status(500).json({ message: "Error fetching junctions" });
@@ -90,16 +86,33 @@ app.get("/api/junctions", async (req, res) => {
 });
 
 // API to fetch traffic lights for a specific junction
-app.get("/api/traffic-lights/:junction_id", (req, res) => {
-  const junctionId = req.params.junction_id;
-  const trafficLights = gettrafficlights(junctionId);
-  const formattedTrafficLights = trafficLights.map((tl) => ({
-    id: tl.id_traffic_light,
-    lat: tl.latitute,
-    lng: tl.longitude,
-  }));
-  res.json({ trafficLights: formattedTrafficLights });
-  console.log("Traffic Lights:", formattedTrafficLights);
+app.get("/api/traffic-lights/:junction_id", async (req, res) => {
+  try {
+    const junction = await axios.get(
+      `http://150.140.186.118:1026/v2/entities/${req.params.junction_id}`
+    );
+
+    let cb_data_junction = JSON.stringify(junction.data);
+    cb_data_junction = JSON.parse(cb_data_junction);
+    //console.log(cb_data_junction);
+
+    // for(let i=0; i<cb_data_junction.fanaria.value.length; i++){
+    //   const trafficLight = await axios.get("http://150.140.186.118:1026/v2/entities?id="+cb_data_junction.fanaria.value[i]);
+
+    //res.json({ junctions: formattedJunctions });
+  } catch (error) {
+    console.error("Error fetching junctions from context broker:", error);
+    res.status(500).json({ message: "Error fetching junctions" });
+  }
+  // const junctionId = req.params.junction_id;
+  // const trafficLights = gettrafficlights(junctionId);
+  // const formattedTrafficLights = trafficLights.map((tl) => ({
+  //   id: tl.id_traffic_light,
+  //   lat: tl.latitute,
+  //   lng: tl.longitude,
+  // }));
+  // res.json({ trafficLights: formattedTrafficLights });
+  // console.log("Traffic Lights:", formattedTrafficLights);
 });
 
 // API to fetch live traffic data for a specific junction and traffic light
