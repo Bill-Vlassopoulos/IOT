@@ -1,6 +1,6 @@
 import requests
 
-# http://150.140.186.118:1026/v2/entities/v1_omada14_fanari_0
+# http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_0
 
 url = "http://150.140.186.118:1026/v2/entities"
 headers = {"Content-Type": "application/json"}
@@ -42,10 +42,10 @@ max_diastavroseis = 5
 for diastavrosi_id in range(0, max_diastavroseis):
     lista_apo_fanaria = []
     for i in range(0, 4):
-        lista_apo_fanaria.append("v1_omada14_fanari_" + str(fanari_id))
+        lista_apo_fanaria.append("v2_omada14_fanari_" + str(fanari_id))
         #### fanari creation
         data = {
-            "id": "v1_omada14_fanari_" + str(fanari_id),
+            "id": "v2_omada14_fanari_" + str(fanari_id),
             "type": "TrafficLight",
             "title": {"type": "Text", "value": traffic_lights[fanari_id][2]},
             "location": {
@@ -92,6 +92,14 @@ for diastavrosi_id in range(0, max_diastavroseis):
                     },
                 ],
             },
+
+            "violations":{
+                "type": "Integer",
+                "value": 1,
+                "metadata": {
+                    "timestamp": {"type": "DateTime", "value": "2024-12-17T15:30:00Z"}
+                },
+            }
         }
 
         response = requests.post(url, json=data, headers=headers)
@@ -100,8 +108,8 @@ for diastavrosi_id in range(0, max_diastavroseis):
 
         fanari_id += 1
     data = {
-        "id": "v1_omada14_diastavrosi_" + str(diastavrosi_id),
-        "type": "v1_omada14_diastavrosi",
+        "id": "v2_omada14_diastavrosi_" + str(diastavrosi_id),
+        "type": "v2_omada14_diastavrosi",
         "title": {"type": "Text", "value": juction_locations[diastavrosi_id][2]},
         "fanaria": {"type": "list", "value": lista_apo_fanaria},
         "location": {
