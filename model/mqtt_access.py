@@ -1,11 +1,10 @@
 import json
-
 import paho.mqtt.client as mqtt
 
 # MQTT broker details
 MQTT_BROKER = "150.140.186.118"
 MQTT_PORT = 1883
-MQTT_TOPIC = "v1_fanaria"
+MQTT_TOPIC = "v2_fanaria/#"  # Subscribe to all subtopics under v2_fanaria
 
 
 # Callback when the client receives a CONNACK response from the server
