@@ -1,115 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map with Overlay Dashboard</title>
+    <link rel="stylesheet" href="dashboard-map.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Map with Overlay Dashboard</title>
-  <link rel="stylesheet" href="dashboard-map.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3">
+      <div class="container">
+        <a class="navbar-brand" href="#">Smart Traffic Lights</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active px-4" aria-current="page" href="/"
+                >HOME</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active px-4" href="/map">TRAFFIC LIGHT INFO</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active px-4" href="#">ADMIN</a>
+            </li>
+          </ul>
 
-</head>
-
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3">
-    <div class="container">
-      <a class="navbar-brand" href="#">Smart Traffic Lights</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active px-4" aria-current="page" href="/">HOME</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active px-4" href="/map">TRAFFIC LIGHT INFO</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active px-4" href="#">ADMIN</a>
-          </li>
-        </ul>
-
-        <div class="ms-auto">
-          <button class="btn btn-outline-light" type="submit">Sign-In</button>
-          <button class="btn btn-outline-light" type="submit">Sign-Up</button>
+          <div class="ms-auto">
+            <button class="btn btn-outline-light" type="submit">Sign-In</button>
+            <button class="btn btn-outline-light" type="submit">Sign-Up</button>
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <div class="map-container">
-    <div id="map"></div>
+    <div class="map-container">
+      <div id="map"></div>
 
-    <!--Go Back Button-->
-    <button id="goBack" class="hidden goback-btn">&larr;</button>
+      <!--Go Back Button-->
+      <button id="goBack" class="hidden goback-btn">&larr;</button>
 
-    <!-- Dashboard Overlay -->
-    <div id="dashboard" class="hidden">
-      <button id="closeDashboard" class="close-btn">X</button>
-      <div class="dashboard-content">
-        <div class="light-and-left">
-          <div class="traffic-light">
-            <div class="imikiklio-panw"></div>
+      <!-- Dashboard Overlay -->
+      <div id="dashboard" class="hidden">
+        <button id="closeDashboard" class="close-btn">X</button>
+        <div class="dashboard-content">
+          <div class="light-and-left">
+            <div class="traffic-light">
+              <div class="imikiklio-panw"></div>
 
-            <div class="fanaraki">
-              <div id="red_light" class="xrwma"></div>
+              <div class="fanaraki">
+                <div id="red_light" class="xrwma"></div>
 
-              <div id="orange_light" class="xrwma"></div>
+                <div id="orange_light" class="xrwma"></div>
 
-              <div id="green_light" class="xrwma"></div>
+                <div id="green_light" class="xrwma"></div>
+              </div>
+
+              <div class="imikiklio-katw"></div>
             </div>
-
-            <div class="imikiklio-katw"></div>
-          </div>
-          <!-- Left Column -->
-          <div class="left-column">
-            <!-- Card 1 -->
-            <div class="karta">
-              <div class="karta-content">
-                <div class="icon">🚗</div>
-                <div class="info">
-                  <h3>Waiting Cars</h3>
-                  <p id="waiting-cars">10</p>
+            <!-- Left Column -->
+            <div class="left-column">
+              <!-- Card 1 -->
+              <div class="karta">
+                <div class="karta-content">
+                  <div class="icon">🚗</div>
+                  <div class="info">
+                    <h3>Waiting Cars</h3>
+                    <p id="waiting-cars">10</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="karta">
+                <div class="karta-content">
+                  <div class="icon">⚠️</div>
+                  <div class="info">
+                    <h3>Violations</h3>
+                    <p id="violations">3</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <!-- Card 2 -->
-            <div class="karta">
-              <div class="karta-content">
-                <div class="icon">⚠️</div>
-                <div class="info">
-                  <h3>Violations</h3>
-                  <p id="violations">3</p>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-        <!-- Diagram Card -->
-        <div class="diagram-card">
-          <canvas id="trafficChart"></canvas>
+          <!-- Diagram Card -->
+          <div class="diagram-card">
+            <canvas id="trafficChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Open Dashboard Button -->
-  <button id="openDashboard" class="hidden map-btn">Open Dashboard</button>
+    <!-- Open Dashboard Button -->
+    <button id="openDashboard" class="hidden map-btn">Open Dashboard</button>
 
-  <script src="dashboard-map.mjs"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-</body>
-
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"
+      type="text/javascript"
+    ></script>
+    <script src="dashboard-map.mjs"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
