@@ -1,5 +1,5 @@
-const MQTT_BROKER = "ws://150.140.186.118:1883/mqtt";
-let currentTopic = "v2_fanaria/v2_omada14_fanari_0";
+// const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt";
+// let currentTopic = "v2_fanaria/v2_omada14_fanari_0";
 
 let lastclickedtrafficlight = {};
 let currentJunctionId = null;
@@ -8,8 +8,8 @@ let currentTrafficLightId = null;
 const client = new Paho.MQTT.Client(MQTT_BROKER, "clientId");
 
 // Set callback handlers
-client.onConnectionLost = onConnectionLost;
-client.onMessageArrived = onMessageArrived;
+// client.onConnectionLost = onConnectionLost;
+// client.onMessageArrived = onMessageArrived;
 
 // Connect the client
 client.connect({ onSuccess: onConnect });
@@ -18,7 +18,7 @@ client.connect({ onSuccess: onConnect });
 function onConnect() {
   console.log("Connected to MQTT broker");
   // Subscribe to the initial topic
-  subscribeToTopic(currentTopic);
+
 }
 
 // Called when the client loses its connection

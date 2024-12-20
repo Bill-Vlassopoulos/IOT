@@ -41,6 +41,10 @@ app.get("/map", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "layouts", "dashboard-map.html"));
 });
 
+app.get("/test", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "layouts", "mqtt-test.html"));
+});
+
 app.get("/signin", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "layouts", "login.html"));
 });
@@ -99,7 +103,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
       const trafficLight = await axios.get(
         "http://150.140.186.118:1026/v2/entities?id=" +
-          cb_data_junction.fanaria.value[i]
+        cb_data_junction.fanaria.value[i]
       );
       let cb_data_trafficlight = JSON.stringify(trafficLight.data);
       cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
