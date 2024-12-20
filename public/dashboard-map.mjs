@@ -1,9 +1,32 @@
-import mqtt from "mqtt";
-
+const MQTT_BROKER = "ws://150.140.186.118:1883/mqtt";
+let currentTopic = "v2_fanaria/v2_omada14_fanari_0";
 
 let lastclickedtrafficlight = {};
 let currentJunctionId = null;
 let currentTrafficLightId = null;
+
+const client = new Paho.MQTT.Client(MQTT_BROKER, "clientId");
+
+// Set callback handlers
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+
+// Connect the client
+client.connect({ onSuccess: onConnect });
+
+// Called when the client connects
+function onConnect() {
+  console.log("Connected to MQTT broker");
+  // Subscribe to the initial topic
+  subscribeToTopic(currentTopic);
+}
+
+// Called when the client loses its connection
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0) {
+    console.log("onConnectionLost:", responseObject.errorMessage);
+  }
+}
 
 //Initialize the map
 document.addEventListener("DOMContentLoaded", function () {
@@ -253,6 +276,7 @@ openDashboardBtn.addEventListener("click", () => {
 
 // Hide the dashboard
 closeDashboardBtn.addEventListener("click", () => {
+  unsubscribeFromTopic(`v2_fanaria/${currentTrafficLightId}`);
   dashboard.classList.remove("visible");
   mapElement.classList.remove("map-blurred");
   openDashboardBtn.classList.remove("hidden");
@@ -360,6 +384,7 @@ closeDashboardBtn.addEventListener("click", () => {
 // const green_light = fanaraki(":nth-child(3)");
 
 function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
+  subscribeToTopic(`v2_fanaria/${trafficLightId}`);
   // Fetch traffic info from the backend
   fetch(`/api/traffic-info/${junctionId}/${trafficLightId}`)
     .then((response) => response.json())
@@ -375,7 +400,8 @@ function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
         //   document.getElementById("waiting-cars").textContent = waitingCars;
         // }
         console.log(trafficInfo);
-        document.getElementById("waiting-cars").textContent = trafficInfo["waiting-cars"];
+        document.getElementById("waiting-cars").textContent =
+          trafficInfo["waiting-cars"];
 
         // Update violations: Sum all violations for the day (assuming violation is an integer field)
         //   const totalViolations = trafficInfo.reduce(
@@ -386,7 +412,8 @@ function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
         // } else {
         //   console.log("Error fetching traffic data:", data.message);
         // }
-        document.getElementById("violations").textContent = trafficInfo["violations"];
+        document.getElementById("violations").textContent =
+          trafficInfo["violations"];
       }
     })
     .catch((error) => {
@@ -480,3 +507,34 @@ document.addEventListener("keyup", function (event) {
       break;
   }
 });
+
+//MQTT
+
+// Callback when the client connects to the broker
+// client.on("connect", () => {
+//   console.log("Connected to MQTT broker");
+//   // Subscribe to the initial topic
+//   subscribeToTopic(currentTopic);
+// });
+
+// Function to subscribe to a topic
+function subscribeToTopic(topic) {
+  client.subscribe(topic, (err) => {
+    if (!err) {
+      console.log(`Subscribed to topic: ${topic}`);
+    } else {
+      console.error(`Failed to subscribe to topic: ${topic}`, err);
+    }
+  });
+}
+
+// Function to unsubscribe from a topic
+function unsubscribeFromTopic(topic) {
+  client.unsubscribe(topic, (err) => {
+    if (!err) {
+      console.log(`Unsubscribed from topic: ${topic}`);
+    } else {
+      console.error(`Failed to unsubscribe from topic: ${topic}`, err);
+    }
+  });
+}

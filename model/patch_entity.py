@@ -5,7 +5,7 @@ from datetime import datetime
 # Get the current time in the required format
 current_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
-url= "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_0/attrs"
+url= "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_4/attrs"
 #url= "http://150.140.186.118:1026/v2/entities/v2_omada14_diastavrosi_0/attrs"
 
 headers = {
@@ -15,7 +15,7 @@ headers = {
 data = {
     "waitingCars": {
                 "type": "Integer",
-                "value": 24,
+                "value": 15,
                 "metadata": {
                     "timestamp": {"type": "DateTime", "value": current_time}
                 },
