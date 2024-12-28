@@ -1,5 +1,6 @@
 import random
 import datetime
+import json
 
 
 def main():
@@ -25,6 +26,11 @@ def main():
     fanari_18 = Traffic_Light("v2_omada14_fanari_18", "Φανάρι 2")
     fanari_19 = Traffic_Light("v2_omada14_fanari_19", "Φανάρι 3")
 
+    fanari_0.set_random_waiting_vehicles()
+    fanari_1.set_random_waiting_vehicles()
+    fanari_2.set_random_waiting_vehicles()
+    fanari_3.set_random_waiting_vehicles()
+
     # Junction 0 Πανεπιστήμιο Πατρών
     junction_0 = Traffic_Juction("v2_omada14_diastavrosi_0", "Πανεπιστήμιο Πατρών")
     junction_0.add_traffic_light(fanari_0)
@@ -32,36 +38,41 @@ def main():
     junction_0.add_traffic_light(fanari_2)
     junction_0.add_traffic_light(fanari_3)
 
-    # Junction 1 Τόφαλος 1
-    junction_1 = Traffic_Juction("v2_omada14_diastavrosi_1", "Τόφαλος 1")
-    junction_1.add_traffic_light(fanari_4)
-    junction_1.add_traffic_light(fanari_5)
-    junction_1.add_traffic_light(fanari_6)
-    junction_1.add_traffic_light(fanari_7)
+    junction_0.traffic_lights_schedule()
+    for x in junction_0.traffic_lights:
+        print(x.id + ": " + str(x.get_sum_waiting_vehicles()))
+    # # Junction 1 Τόφαλος 1
+    # junction_1 = Traffic_Juction("v2_omada14_diastavrosi_1", "Τόφαλος 1")
+    # junction_1.add_traffic_light(fanari_4)
+    # junction_1.add_traffic_light(fanari_5)
+    # junction_1.add_traffic_light(fanari_6)
+    # junction_1.add_traffic_light(fanari_7)
 
-    # Junction 2 Τόφαλος 2
-    junction_2 = Traffic_Juction("v2_omada14_diastavrosi_2", "Τόφαλος 2")
-    junction_2.add_traffic_light(fanari_8)
-    junction_2.add_traffic_light(fanari_9)
-    junction_2.add_traffic_light(fanari_10)
-    junction_2.add_traffic_light(fanari_11)
+    # # Junction 2 Τόφαλος 2
+    # junction_2 = Traffic_Juction("v2_omada14_diastavrosi_2", "Τόφαλος 2")
+    # junction_2.add_traffic_light(fanari_8)
+    # junction_2.add_traffic_light(fanari_9)
+    # junction_2.add_traffic_light(fanari_10)
+    # junction_2.add_traffic_light(fanari_11)
 
-    # Junction 3 Ζαίμη
-    junction_3 = Traffic_Juction("v2_omada14_diastavrosi_3", "Ζαίμη")
-    junction_3.add_traffic_light(fanari_12)
-    junction_3.add_traffic_light(fanari_13)
-    junction_3.add_traffic_light(fanari_14)
-    junction_3.add_traffic_light(fanari_15)
+    # # Junction 3 Ζαίμη
+    # junction_3 = Traffic_Juction("v2_omada14_diastavrosi_3", "Ζαίμη")
+    # junction_3.add_traffic_light(fanari_12)
+    # junction_3.add_traffic_light(fanari_13)
+    # junction_3.add_traffic_light(fanari_14)
+    # junction_3.add_traffic_light(fanari_15)
 
-    # Junction 4 Σίκινου
-    junction_4 = Traffic_Juction("v2_omada14_diastavrosi_4", "Σίκινου")
-    junction_4.add_traffic_light(fanari_16)
-    junction_4.add_traffic_light(fanari_17)
-    junction_4.add_traffic_light(fanari_18)
-    junction_4.add_traffic_light(fanari_19)
+    # # Junction 4 Σίκινου
+    # junction_4 = Traffic_Juction("v2_omada14_diastavrosi_4", "Σίκινου")
+    # junction_4.add_traffic_light(fanari_16)
+    # junction_4.add_traffic_light(fanari_17)
+    # junction_4.add_traffic_light(fanari_18)
+    # junction_4.add_traffic_light(fanari_19)
 
 
 def _time(starttime, endtime):
+    starttime = starttime.isoformat()
+    endtime = endtime.isoformat()
     return {"starttime": starttime, "endtime": endtime}
 
 
@@ -112,7 +123,7 @@ class Traffic_Juction:
         gaptime = 2
         orangetime = 2
         overall_green_time = (
-            self.T - len(self.traffic_lights) * (orangetime) - 5 * gaptime
+            self.T - len(self.traffic_lights) * (orangetime) - 4 * gaptime
         )
         all_vehicles = {}
         for traffic_light in self.traffic_lights:
@@ -127,22 +138,40 @@ class Traffic_Juction:
             all_vehicles[key] = (
                 all_vehicles[key] * overall_green_time / total_sum_vehicles
             )
+        print("Overall Green Time: " + str(overall_green_time))
 
         all_times = all_vehicles
         timeframes = {}
-        previous_time = datetime.timedelta(seconds=0)
+        previous_time = datetime.datetime.now()
         for key in all_times:
+            start_time = previous_time
+            end_time = start_time + datetime.timedelta(seconds=all_times[key])
             timeframes[key] = {
                 "greentime": _time(
-                    datetime.datetime.now() + previous_time,
-                    datetime.datetime.now()
-                    + datetime.timedelta(seconds=all_times[key]),
+                    start_time,
+                    end_time,
+                ),
+                "orangetime": _time(
+                    end_time,
+                    end_time + datetime.timedelta(seconds=orangetime),
                 ),
             }
-            previous_time = datetime.datetime.now() + datetime.timedelta(
-                seconds=all_times[key]
+            green_duration = datetime.datetime.fromisoformat(
+                timeframes[key]["greentime"]["endtime"]
+            ) - datetime.datetime.fromisoformat(
+                timeframes[key]["greentime"]["starttime"]
             )
+            print(f"Green duration for {key}: {green_duration}")
+            previous_time = (
+                end_time
+                + datetime.timedelta(seconds=orangetime)
+                + datetime.timedelta(seconds=gaptime)
+            )
+
+        # print(timeframes)
+        print(json.dumps(timeframes, indent=4, ensure_ascii=False))
 
 
 if __name__ == "__main__":
     main()
+# python -u "c:\Users\billy\OneDrive\ΗΜΤΥ\9ο ΕΞΑΜΗΝΟ\ΔΙΑΔΙΚΤΥΟ ΤΩΝ ΠΡΑΓΜΑΤΩΝ\PROJECT\Web\model\traffic_light_simulator.py"
