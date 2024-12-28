@@ -104,7 +104,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
       const trafficLight = await axios.get(
         "http://150.140.186.118:1026/v2/entities?id=" +
-          cb_data_junction.fanaria.value[i]
+        cb_data_junction.fanaria.value[i]
       );
       let cb_data_trafficlight = JSON.stringify(trafficLight.data);
       cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
@@ -180,17 +180,17 @@ app.listen(PORT, () => {
   console.log(`Server running on: http://localhost:${PORT}`);
 });
 
-// Start the Python script
-const scriptManager = new PythonScriptManager("./model/patch_entity.py");
+// // Start the Python script
+// const scriptManager = new PythonScriptManager("./model/patch_entity.py");
 
-scriptManager.start();
+// scriptManager.start();
 
-// Stop the script after 1 minute
-setTimeout(() => {
-  scriptManager.stop();
-}, 60000); // 60,000 ms = 1 minute
+// // Stop the script after 1 minute
+// setTimeout(() => {
+//   scriptManager.stop();
+// }, 60000); // 60,000 ms = 1 minute
 
-// Restart the script after 2 minutes
-setTimeout(() => {
-  scriptManager.restart();
-}, 120000); // 120,000 ms = 2 minutes
+// // Restart the script after 2 minutes
+// setTimeout(() => {
+//   scriptManager.restart();
+// }, 120000); // 120,000 ms = 2 minutes

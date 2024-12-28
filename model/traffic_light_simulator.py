@@ -2,6 +2,7 @@ import random
 import datetime
 import json
 import requests
+import threading
 
 headers = {"Content-Type": "application/json"}
 link = "http://150.140.186.118:1026/v2/entities/"
@@ -46,32 +47,54 @@ def main():
     for x in junction_0.traffic_lights:
         print(x.id + ": " + str(x.get_sum_waiting_vehicles()))
     # # Junction 1 Τόφαλος 1
-    # junction_1 = Traffic_Juction("v2_omada14_diastavrosi_1", "Τόφαλος 1")
-    # junction_1.add_traffic_light(fanari_4)
-    # junction_1.add_traffic_light(fanari_5)
-    # junction_1.add_traffic_light(fanari_6)
-    # junction_1.add_traffic_light(fanari_7)
+    junction_1 = Traffic_Juction("v2_omada14_diastavrosi_1", "Τόφαλος 1")
+    junction_1.add_traffic_light(fanari_4)
+    junction_1.add_traffic_light(fanari_5)
+    junction_1.add_traffic_light(fanari_6)
+    junction_1.add_traffic_light(fanari_7)
 
     # # Junction 2 Τόφαλος 2
-    # junction_2 = Traffic_Juction("v2_omada14_diastavrosi_2", "Τόφαλος 2")
-    # junction_2.add_traffic_light(fanari_8)
-    # junction_2.add_traffic_light(fanari_9)
-    # junction_2.add_traffic_light(fanari_10)
-    # junction_2.add_traffic_light(fanari_11)
+    junction_2 = Traffic_Juction("v2_omada14_diastavrosi_2", "Τόφαλος 2")
+    junction_2.add_traffic_light(fanari_8)
+    junction_2.add_traffic_light(fanari_9)
+    junction_2.add_traffic_light(fanari_10)
+    junction_2.add_traffic_light(fanari_11)
 
-    # # Junction 3 Ζαίμη
-    # junction_3 = Traffic_Juction("v2_omada14_diastavrosi_3", "Ζαίμη")
-    # junction_3.add_traffic_light(fanari_12)
-    # junction_3.add_traffic_light(fanari_13)
-    # junction_3.add_traffic_light(fanari_14)
-    # junction_3.add_traffic_light(fanari_15)
+    # Junction 3 Ζαίμη
+    junction_3 = Traffic_Juction("v2_omada14_diastavrosi_3", "Ζαίμη")
+    junction_3.add_traffic_light(fanari_12)
+    junction_3.add_traffic_light(fanari_13)
+    junction_3.add_traffic_light(fanari_14)
+    junction_3.add_traffic_light(fanari_15)
 
-    # # Junction 4 Σίκινου
-    # junction_4 = Traffic_Juction("v2_omada14_diastavrosi_4", "Σίκινου")
-    # junction_4.add_traffic_light(fanari_16)
-    # junction_4.add_traffic_light(fanari_17)
-    # junction_4.add_traffic_light(fanari_18)
-    # junction_4.add_traffic_light(fanari_19)
+    # Junction 4 Σίκινου
+    junction_4 = Traffic_Juction("v2_omada14_diastavrosi_4", "Σίκινου")
+    junction_4.add_traffic_light(fanari_16)
+    junction_4.add_traffic_light(fanari_17)
+    junction_4.add_traffic_light(fanari_18)
+    junction_4.add_traffic_light(fanari_19)
+
+    # Run the traffic lights schedule every self.T seconds
+    run_periodically(junction_0.T, [junction_0.traffic_lights_schedule])
+
+    # Run the set_random_waiting_vehicles method every T/3 seconds for each traffic light
+    for traffic_light in junction_0.traffic_lights:
+        run_periodically(
+            junction_0.T / 3,
+            [
+                traffic_light.set_random_waiting_vehicles,
+                traffic_light.patch_waiting_vehicles,
+            ],
+        )
+
+
+def run_periodically(interval, funcs, *args, **kwargs):
+    def wrapper():
+        for func in funcs:
+            func(*args, **kwargs)
+        threading.Timer(interval, wrapper).start()
+
+    threading.Timer(interval, wrapper).start()
 
 
 def _time(starttime, endtime):
@@ -85,16 +108,39 @@ class Traffic_Light:
         self.id = id
         self.name = name
         self.waiting_vehicles = {"cars": 0, "bikes": 0, "buses": 0, "trucks": 0}
-        self.traffic_light_time = {
-            "redtime": {"starttime": None, "endtime": None},
-            "greentime": {"starttime": None, "endtime": None},
-            "orangetime": {"starttime": None, "endtime": None},
-        }
+        self.traffic_light_time = {}
 
     def get_waiting_vehicles(self):
         return self.waiting_vehicles
 
+    def patch_waiting_vehicles(self):
+
+        url = link + self.id + "/attrs"
+        data = {
+            "waitingCars": {
+                "type": "Integer",
+                "value": self.get_sum_waiting_vehicles(),
+                "metadata": {
+                    "timestamp": {
+                        "type": "DateTime",
+                        "value": datetime.datetime.now().isoformat(),
+                    }
+                },
+            }
+        }
+
+        try:
+            response = requests.patch(url, json=data, headers=headers)
+            if response.status_code == 204:
+                print(f"Entity {url} updated successfully")
+            else:
+                print(f"Failed to update entity {url}: {response.status_code}")
+                print(response.json())
+        except Exception as e:
+            print(f"Error while updating entity {url}: {e}")
+
     def get_sum_waiting_vehicles(self):
+        print(self.id + ": " + str(sum(self.waiting_vehicles.values())))
         return sum(self.waiting_vehicles.values())
 
     def set_random_waiting_vehicles(self):
@@ -113,6 +159,7 @@ class Traffic_Light:
             },
         }
         self.patch_traffic_light_time()
+        # self.patch_waiting_vehicles()
 
     def patch_traffic_light_time(self):
         url = link + self.id + "/attrs"
@@ -205,13 +252,13 @@ class Traffic_Juction:
         for traffic_light in self.traffic_lights:
             if traffic_light.id in timeframes:
                 traffic_light.set_traffic_light_time(timeframes[traffic_light.id])
-                print(
-                    traffic_light.id
-                    + ": "
-                    + json.dumps(
-                        traffic_light.traffic_light_time, indent=4, ensure_ascii=False
-                    )
-                )
+                # print(
+                #     traffic_light.id
+                #     + ": "
+                #     + json.dumps(
+                #         traffic_light.traffic_light_time, indent=4, ensure_ascii=False
+                #     )
+                # )
 
 
 if __name__ == "__main__":
