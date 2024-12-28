@@ -1,30 +1,34 @@
 import random
 import datetime
 import json
+import requests
+
+headers = {"Content-Type": "application/json"}
+link = "http://150.140.186.118:1026/v2/entities/"
 
 
 def main():
     # Traffic Lights
-    fanari_0 = Traffic_Light("v2_omada14_fanari_0", "Φανάρι 0")
-    fanari_1 = Traffic_Light("v2_omada14_fanari_1", "Φανάρι 1")
-    fanari_2 = Traffic_Light("v2_omada14_fanari_2", "Φανάρι 2")
-    fanari_3 = Traffic_Light("v2_omada14_fanari_3", "Φανάρι 3")
-    fanari_4 = Traffic_Light("v2_omada14_fanari_4", "Φανάρι 0")
-    fanari_5 = Traffic_Light("v2_omada14_fanari_5", "Φανάρι 1")
-    fanari_6 = Traffic_Light("v2_omada14_fanari_6", "Φανάρι 2")
-    fanari_7 = Traffic_Light("v2_omada14_fanari_7", "Φανάρι 3")
-    fanari_8 = Traffic_Light("v2_omada14_fanari_8", "Φανάρι 0")
-    fanari_9 = Traffic_Light("v2_omada14_fanari_9", "Φανάρι 1")
-    fanari_10 = Traffic_Light("v2_omada14_fanari_10", "Φανάρι 2")
-    fanari_11 = Traffic_Light("v2_omada14_fanari_11", "Φανάρι 3")
-    fanari_12 = Traffic_Light("v2_omada14_fanari_12", "Φανάρι 0")
-    fanari_13 = Traffic_Light("v2_omada14_fanari_13", "Φανάρι 1")
-    fanari_14 = Traffic_Light("v2_omada14_fanari_14", "Φανάρι 2")
-    fanari_15 = Traffic_Light("v2_omada14_fanari_15", "Φανάρι 3")
-    fanari_16 = Traffic_Light("v2_omada14_fanari_16", "Φανάρι 0")
-    fanari_17 = Traffic_Light("v2_omada14_fanari_17", "Φανάρι 1")
-    fanari_18 = Traffic_Light("v2_omada14_fanari_18", "Φανάρι 2")
-    fanari_19 = Traffic_Light("v2_omada14_fanari_19", "Φανάρι 3")
+    fanari_0 = Traffic_Light("v2_omada14_fanari_0", "Φανάρι 1")
+    fanari_1 = Traffic_Light("v2_omada14_fanari_1", "Φανάρι 2")
+    fanari_2 = Traffic_Light("v2_omada14_fanari_2", "Φανάρι 3")
+    fanari_3 = Traffic_Light("v2_omada14_fanari_3", "Φανάρι 4")
+    fanari_4 = Traffic_Light("v2_omada14_fanari_4", "Φανάρι 1")
+    fanari_5 = Traffic_Light("v2_omada14_fanari_5", "Φανάρι 2")
+    fanari_6 = Traffic_Light("v2_omada14_fanari_6", "Φανάρι 3")
+    fanari_7 = Traffic_Light("v2_omada14_fanari_7", "Φανάρι 4")
+    fanari_8 = Traffic_Light("v2_omada14_fanari_8", "Φανάρι 1")
+    fanari_9 = Traffic_Light("v2_omada14_fanari_9", "Φανάρι 2")
+    fanari_10 = Traffic_Light("v2_omada14_fanari_10", "Φανάρι 3")
+    fanari_11 = Traffic_Light("v2_omada14_fanari_11", "Φανάρι 4")
+    fanari_12 = Traffic_Light("v2_omada14_fanari_12", "Φανάρι 1")
+    fanari_13 = Traffic_Light("v2_omada14_fanari_13", "Φανάρι 2")
+    fanari_14 = Traffic_Light("v2_omada14_fanari_14", "Φανάρι 3")
+    fanari_15 = Traffic_Light("v2_omada14_fanari_15", "Φανάρι 4")
+    fanari_16 = Traffic_Light("v2_omada14_fanari_16", "Φανάρι 1")
+    fanari_17 = Traffic_Light("v2_omada14_fanari_17", "Φανάρι 2")
+    fanari_18 = Traffic_Light("v2_omada14_fanari_18", "Φανάρι 3")
+    fanari_19 = Traffic_Light("v2_omada14_fanari_19", "Φανάρι 4")
 
     fanari_0.set_random_waiting_vehicles()
     fanari_1.set_random_waiting_vehicles()
@@ -101,12 +105,28 @@ class Traffic_Light:
             "trucks": random.randint(1, 10),
         }
 
-    def set_traffic_light_time(self, redtime, greentime, orangetime):
+    def set_traffic_light_time(self, value):
         self.traffic_light_time = {
-            "redtime": redtime,
-            "greentime": greentime,
-            "orangetime": orangetime,
+            "schedule": {
+                "type": "StructuredValue",
+                "value": value,
+            },
         }
+        self.patch_traffic_light_time()
+
+    def patch_traffic_light_time(self):
+        url = link + self.id + "/attrs"
+        data = self.traffic_light_time
+
+        try:
+            response = requests.patch(url, json=data, headers=headers)
+            if response.status_code == 204:
+                print(f"Entity {url} updated successfully")
+            else:
+                print(f"Failed to update entity {url}: {response.status_code}")
+                print(response.json())
+        except Exception as e:
+            print(f"Error while updating entity {url}: {e}")
 
 
 class Traffic_Juction:
@@ -146,22 +166,28 @@ class Traffic_Juction:
         for key in all_times:
             start_time = previous_time
             end_time = start_time + datetime.timedelta(seconds=all_times[key])
-            timeframes[key] = {
-                "greentime": _time(
-                    start_time,
-                    end_time,
-                ),
-                "orangetime": _time(
-                    end_time,
-                    end_time + datetime.timedelta(seconds=orangetime),
-                ),
-            }
-            green_duration = datetime.datetime.fromisoformat(
-                timeframes[key]["greentime"]["endtime"]
-            ) - datetime.datetime.fromisoformat(
-                timeframes[key]["greentime"]["starttime"]
-            )
-            print(f"Green duration for {key}: {green_duration}")
+            timeframes[key] = [
+                {
+                    "phase": "Green",
+                    "startTime": start_time.isoformat(),
+                    "endTime": end_time.isoformat(),
+                },
+                {
+                    "phase": "Orange",
+                    "startTime": end_time.isoformat(),
+                    "endTime": (
+                        end_time + datetime.timedelta(seconds=orangetime)
+                    ).isoformat(),
+                },
+                {"phase": "Red", "startTime": "None", "endTime": "None"},
+            ]
+
+            # green_duration = datetime.datetime.fromisoformat(
+            #     timeframes[key]["greentime"]["endtime"]
+            # ) - datetime.datetime.fromisoformat(
+            #     timeframes[key]["greentime"]["starttime"]
+            # )
+            # print(f"Green duration for {key}: {green_duration}")
             previous_time = (
                 end_time
                 + datetime.timedelta(seconds=orangetime)
@@ -169,7 +195,23 @@ class Traffic_Juction:
             )
 
         # print(timeframes)
-        print(json.dumps(timeframes, indent=4, ensure_ascii=False))
+        # print(json.dumps(timeframes, indent=4, ensure_ascii=False))
+
+        self.share_schedule(timeframes)
+
+        return timeframes
+
+    def share_schedule(self, timeframes):
+        for traffic_light in self.traffic_lights:
+            if traffic_light.id in timeframes:
+                traffic_light.set_traffic_light_time(timeframes[traffic_light.id])
+                print(
+                    traffic_light.id
+                    + ": "
+                    + json.dumps(
+                        traffic_light.traffic_light_time, indent=4, ensure_ascii=False
+                    )
+                )
 
 
 if __name__ == "__main__":
