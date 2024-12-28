@@ -157,7 +157,8 @@ app.get(
     // console.log(cb_data_dashboard.waitingCars.value, cb_data_dashboard.violations.value);
     let trafficInfo = {
       "waiting-cars": cb_data_dashboard.waitingCars.value,
-      violations: cb_data_dashboard.violations.value,
+      "violations": cb_data_dashboard.violations.value,
+      "colors": cb_data_dashboard.schedule.value,
     };
 
     // If traffic data exists, send it as a response

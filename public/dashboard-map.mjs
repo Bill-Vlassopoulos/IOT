@@ -1,3 +1,5 @@
+
+
 const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt"; // WebSocket URL for MQTT
 //let currentTopic = "v2_fanaria/v2_omada14_fanari_14"; // Initial topic to subscribe to
 
@@ -178,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
             map.flyTo([location.lat, location.lng], 18);
             currentJunctionId = location.id;
             console.log("Current Junction ID:", currentJunctionId);
+            subscribeToTopic(`v2_fanaria/${currentJunctionId}`);
 
             // Fetch traffic lights for this junction
             fetch(`/api/traffic-lights/${location.id}`)
@@ -272,6 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Reset map to initial state
   goBackButton.addEventListener("click", function () {
     map.flyTo([38.266639, 21.798573], 13);
+    unsubscribeFromTopic(`v2_fanaria/${currentJunctionId}`);
 
     markers.forEach(function (marker) {
       marker.addTo(map);
@@ -303,10 +307,13 @@ const goBackButton = document.getElementById("goBack");
 openDashboardBtn.addEventListener("click", () => {
   console.log(lastclickedtrafficlight);
   fetchTrafficDataAndUpdateDashboard(currentJunctionId, currentTrafficLightId);
+
   dashboard.classList.add("visible");
   mapElement.classList.add("map-blurred");
   openDashboardBtn.classList.add("hidden");
   goBackButton.classList.add("hidden");
+
+  updateInterval = setInterval(updateTrafficLightColor, 1000);
 });
 
 // Hide the dashboard
@@ -316,6 +323,8 @@ closeDashboardBtn.addEventListener("click", () => {
   mapElement.classList.remove("map-blurred");
   openDashboardBtn.classList.remove("hidden");
   goBackButton.classList.remove("hidden");
+
+  clearInterval(updateInterval);
 });
 
 // // Set up dynamic data for the dashboard
@@ -449,12 +458,29 @@ function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
         // }
         document.getElementById("violations").textContent =
           trafficInfo["violations"];
+
+        console.log(trafficInfo["colors"]);
+        const greenStartTime = trafficInfo["colors"][0].startTime;
+        const greenEndTime = trafficInfo["colors"][0].endTime;
+        const orangeStartTime = trafficInfo["colors"][1].startTime;
+        const orangeEndTime = trafficInfo["colors"][1].endTime;
+
+        // Store the traffic light color times globally
+        window.trafficLightColorTimes = {
+          greenStartTime,
+          greenEndTime,
+          orangeStartTime,
+          orangeEndTime,
+        };
+
       }
     })
     .catch((error) => {
       console.log("Error fetching data:", error);
     });
 }
+
+
 
 // Function to update the traffic chart with the new waiting cars data
 function updateTrafficChart(waitingCars) {
@@ -510,35 +536,65 @@ const red_light = document.querySelector(".fanaraki #red_light");
 const orange_light = document.querySelector(".fanaraki #orange_light");
 const green_light = document.querySelector(".fanaraki #green_light");
 
-document.addEventListener("keydown", function (event) {
-  switch (event.key) {
-    case "r":
-      red_light.style.backgroundColor = "red";
-      break;
-    case "o":
-      orange_light.style.backgroundColor = "orange";
-      break;
-    case "g":
-      green_light.style.backgroundColor = "green";
-      break;
-    default:
-      console.log(`Key ${event.key} was pressed!`);
-      break;
-  }
-});
 
-document.addEventListener("keyup", function (event) {
-  switch (event.key) {
-    case "r":
-      red_light.style.backgroundColor = "gray";
-      break;
-    case "o":
-      orange_light.style.backgroundColor = "gray";
-      break;
-    case "g":
-      green_light.style.backgroundColor = "gray";
-      break;
-    default:
-      break;
+function updateTrafficLightColor() {
+  const currentTime = new Date();
+  const greeceOffset = 2 * 60; // Greece is UTC+2
+  const greeceTime = new Date(currentTime.getTime() + greeceOffset * 60 * 1000);
+  const currentISOTime = greeceTime.toISOString();
+
+  const { greenStartTime, greenEndTime, orangeStartTime, orangeEndTime } =
+    window.trafficLightColorTimes || {};
+  console.log("Green Start Time:", greenStartTime);
+  console.log("Green End Time:", greenEndTime);
+
+
+  if (currentISOTime >= greenStartTime && currentISOTime < greenEndTime) {
+    green_light.style.backgroundColor = "green";
+    orange_light.style.backgroundColor = "gray";
+    red_light.style.backgroundColor = "gray";
+  } else if (currentISOTime >= orangeStartTime && currentISOTime < orangeEndTime) {
+    green_light.style.backgroundColor = "gray";
+    orange_light.style.backgroundColor = "orange";
+    red_light.style.backgroundColor = "gray";
+  } else {
+    green_light.style.backgroundColor = "gray";
+    orange_light.style.backgroundColor = "gray";
+    red_light.style.backgroundColor = "red";
   }
-});
+}
+
+
+
+// document.addEventListener("keydown", function (event) {
+//   switch (event.key) {
+//     case "r":
+//       red_light.style.backgroundColor = "red";
+//       break;
+//     case "o":
+//       orange_light.style.backgroundColor = "orange";
+//       break;
+//     case "g":
+//       green_light.style.backgroundColor = "green";
+//       break;
+//     default:
+//       console.log(`Key ${event.key} was pressed!`);
+//       break;
+//   }
+// });
+
+// document.addEventListener("keyup", function (event) {
+//   switch (event.key) {
+//     case "r":
+//       red_light.style.backgroundColor = "gray";
+//       break;
+//     case "o":
+//       orange_light.style.backgroundColor = "gray";
+//       break;
+//     case "g":
+//       green_light.style.backgroundColor = "gray";
+//       break;
+//     default:
+//       break;
+//   }
+// });
