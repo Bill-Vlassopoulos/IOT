@@ -3,6 +3,7 @@ from datetime import datetime,timezone
 import time
 import random
 
+url="http://150.140.186.118:1026/v2/entities/v2_omada14_diastavrosi_0/attrs"
 # List of entity URLs
 entity_urls = [
     "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_0/attrs",
@@ -39,12 +40,16 @@ def patch_entity(url):
     random_value = random.randint(1, 20)
 
     # Data payload for the PATCH request
-    data = {
-        "waitingCars": {
-            "type": "Integer",
-            "value": random_value,
-            "metadata": {"timestamp": {"type": "DateTime", "value": current_time}},
-        }
+    # data = {
+    #     "waitingCars": {
+    #         "type": "Integer",
+    #         "value": random_value,
+    #         "metadata": {"timestamp": {"type": "DateTime", "value": current_time}},
+    #     }
+    # }
+
+    data={
+        "period": {"type": "StructuredValue", "value": {"duration": "40"}},
     }
 
     # Send the PATCH request
@@ -59,7 +64,7 @@ def patch_entity(url):
         print(f"Error while updating entity {url}: {e}")
 
 
-patch_entity(entity_urls[0])  # Patch the first entity
+patch_entity(url)  # Patch the first entity
 
 # # Infinite loop to patch all entities every 30 seconds
 # try:

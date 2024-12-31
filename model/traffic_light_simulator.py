@@ -88,21 +88,36 @@ def main():
     mqtt_thread = threading.Thread(target=start_mqtt_loop)
     mqtt_thread.start()
 
-    # Run the traffic lights schedule every self.T seconds
-    run_periodically(
-        junction_0.T,
-        [junction_0.check_for_update_T],
-    )
+    junction_0_task = PeriodicTask(float(junction_0.T), [junction_0.check_for_update_T, junction_0.traffic_lights_schedule])
+    junction_0_task.start()
 
-    # Run the set_random_waiting_vehicles method every T/3 seconds for each traffic light
+    traffic_light_tasks = []
     for traffic_light in junction_0.traffic_lights:
-        run_periodically(
-            junction_0.T / 3,
+        task = PeriodicTask(
+            float(junction_0.T) / 3,
             [
                 traffic_light.set_random_waiting_vehicles,
                 traffic_light.patch_waiting_vehicles,
             ],
         )
+        task.start()
+        traffic_light_tasks.append(task)
+
+        update_task = PeriodicTask(10, [update_intervals], junction_0=junction_0, junction_0_task=junction_0_task, traffic_light_tasks=traffic_light_tasks)  # Check for updates every 10 seconds
+        update_task.start()
+
+    #  # Periodically check for updates to T and update intervals
+    # def update_intervals():
+    #     junction_0.check_for_update_T()
+    #     junction_0.T=float(junction_0.T)
+    #     print("Updating to ", junction_0.T," seconds")
+    #     junction_0_task.update_interval((junction_0.T))
+    #     for task in traffic_light_tasks:
+    #         task.update_interval(float(junction_0.T) / 3)
+
+    # update_task = PeriodicTask(10, [update_intervals])  # Check for updates every 10 seconds
+    # update_task.start()
+
 
 
 # Callback when the client receives a CONNACK response from the server
@@ -155,6 +170,13 @@ def start_mqtt_loop():
     client.connect(MQTT_BROKER, MQTT_PORT, 60)
     client.loop_forever()
 
+def update_intervals(junction_0, junction_0_task, traffic_light_tasks):
+    junction_0.check_for_update_T()
+    junction_0.T = float(junction_0.T)
+    print("Updating to ", junction_0.T, " seconds")
+    junction_0_task.update_interval(junction_0.T)
+    for task in traffic_light_tasks:
+        task.update_interval(float(junction_0.T) / 3)
 
 def run_periodically(interval, funcs, *args, **kwargs):
     def wrapper():
@@ -262,6 +284,7 @@ class Traffic_Juction:
     def traffic_lights_schedule(self):
         gaptime = 2
         orangetime = 2
+        self.T = float(self.T)
         overall_green_time = (
             self.T - len(self.traffic_lights) * (orangetime) - 4 * gaptime
         )
@@ -278,7 +301,7 @@ class Traffic_Juction:
             all_vehicles[key] = (
                 all_vehicles[key] * overall_green_time / total_sum_vehicles
             )
-        # print("Overall Green Time: " + str(overall_green_time))
+        print("Overall Green Time: ", overall_green_time)
 
         all_times = all_vehicles
         timeframes = {}
@@ -343,7 +366,7 @@ class Traffic_Juction:
 
         # def update_T_from_cb(self):
         url = link + self.id
-        response = requests.get(url, headers=headers)
+        response = requests.get(url)
 
         if response.status_code == 200:
             entity = response.json()
@@ -361,6 +384,36 @@ class Traffic_Juction:
                 print(self.T)
                 MQTT_notifications.remove(notification)
                 break
+
+class PeriodicTask:
+    def __init__(self, interval, funcs, **kwargs):
+        self.interval = interval
+        self.funcs = funcs
+        self.kwargs = kwargs
+        self.timer = None
+        self.running = False
+
+    def start(self):
+        self.running = True
+        self._run()
+
+    def _run(self):
+        if self.running:
+            for func in self.funcs:
+                func(**self.kwargs)
+            self.timer = threading.Timer(self.interval, self._run)
+            self.timer.start()
+
+    def stop(self):
+        self.running = False
+        if self.timer:
+            self.timer.cancel()
+
+    def update_interval(self, interval):
+        self.interval = interval
+        print("Interval updated to ", interval)
+        self.stop()
+        self.start()
 
 
 if __name__ == "__main__":
