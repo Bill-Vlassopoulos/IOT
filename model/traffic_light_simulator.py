@@ -3,12 +3,23 @@ import datetime
 import json
 import requests
 import threading
+import paho.mqtt.client as mqtt
 
+# MQTT broker details
+MQTT_BROKER = "150.140.186.118"
+MQTT_PORT = 1883
+MQTT_TOPIC = (
+    "v2_fanaria/v2_omada14_diastavrosi_0"  # Subscribe to all subtopics under v2_fanaria
+)
+
+message_received = False
 headers = {"Content-Type": "application/json"}
 link = "http://150.140.186.118:1026/v2/entities/"
+MQTT_notifications = []
 
 
 def main():
+
     # Traffic Lights
     fanari_0 = Traffic_Light("v2_omada14_fanari_0", "Φανάρι 1")
     fanari_1 = Traffic_Light("v2_omada14_fanari_1", "Φανάρι 2")
@@ -74,8 +85,14 @@ def main():
     junction_4.add_traffic_light(fanari_18)
     junction_4.add_traffic_light(fanari_19)
 
+    mqtt_thread = threading.Thread(target=start_mqtt_loop)
+    mqtt_thread.start()
+
     # Run the traffic lights schedule every self.T seconds
-    run_periodically(junction_0.T, [junction_0.traffic_lights_schedule])
+    run_periodically(
+        junction_0.T,
+        [junction_0.check_for_update_T],
+    )
 
     # Run the set_random_waiting_vehicles method every T/3 seconds for each traffic light
     for traffic_light in junction_0.traffic_lights:
@@ -86,6 +103,57 @@ def main():
                 traffic_light.patch_waiting_vehicles,
             ],
         )
+
+
+# Callback when the client receives a CONNACK response from the server
+def on_connect(client, userdata, flags, rc):
+    print(f"Connected with result code {rc}")
+    # Subscribing to the topic
+    client.subscribe(MQTT_TOPIC)
+
+
+# Callback when a PUBLISH message is received from the server
+def on_message(client, userdata, msg):
+    try:
+        payload = json.loads(msg.payload.decode())
+        pretty_payload = json.dumps(payload, indent=4)
+
+        MQTT_notifications.append(
+            {
+                payload["data"][0]["id"]: payload["data"][0]["period"]["value"][
+                    "duration"
+                ]
+            }
+        )
+        print(MQTT_notifications)
+        message_received = True
+        # print("\nMessage received=", message_received)
+    except json.JSONDecodeError:
+        # print(f"Topic: {msg.topic}\nMessage: {msg.payload.decode()}")
+        message_received = True
+        # print("\nMessage received=", message_received)
+
+
+def check_mqtt_message():
+    print(message_received)  # Use the global variable
+    if message_received:
+        print("MQTT message received during the period.")
+        message_received = False  # Reset the flag
+    else:
+        print("No MQTT message received during the period.")
+
+
+def start_mqtt_loop():
+    # Create an MQTT client instance
+    client = mqtt.Client()
+
+    # Assign the callback functions
+    client.on_connect = on_connect
+    client.on_message = on_message
+
+    # Connect to the MQTT broker
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    client.loop_forever()
 
 
 def run_periodically(interval, funcs, *args, **kwargs):
@@ -132,7 +200,8 @@ class Traffic_Light:
         try:
             response = requests.patch(url, json=data, headers=headers)
             if response.status_code == 204:
-                print(f"Entity {url} updated successfully")
+                # print(f"Entity {url} updated successfully")
+                pass
             else:
                 print(f"Failed to update entity {url}: {response.status_code}")
                 print(response.json())
@@ -140,7 +209,7 @@ class Traffic_Light:
             print(f"Error while updating entity {url}: {e}")
 
     def get_sum_waiting_vehicles(self):
-        print(self.id + ": " + str(sum(self.waiting_vehicles.values())))
+        # print(self.id + ": " + str(sum(self.waiting_vehicles.values())))
         return sum(self.waiting_vehicles.values())
 
     def set_random_waiting_vehicles(self):
@@ -168,7 +237,8 @@ class Traffic_Light:
         try:
             response = requests.patch(url, json=data, headers=headers)
             if response.status_code == 204:
-                print(f"Entity {url} updated successfully")
+                # print(f"Entity {url} updated successfully")
+                pass
             else:
                 print(f"Failed to update entity {url}: {response.status_code}")
                 print(response.json())
@@ -208,7 +278,7 @@ class Traffic_Juction:
             all_vehicles[key] = (
                 all_vehicles[key] * overall_green_time / total_sum_vehicles
             )
-        print("Overall Green Time: " + str(overall_green_time))
+        # print("Overall Green Time: " + str(overall_green_time))
 
         all_times = all_vehicles
         timeframes = {}
@@ -262,6 +332,35 @@ class Traffic_Juction:
                 #         traffic_light.traffic_light_time, indent=4, ensure_ascii=False
                 #     )
                 # )
+
+        # def notify_for_change_T_with_mqtt(self):
+        #     if message_received:
+        #         self.update_T_from_cb()
+        #         message_received = False
+        #         print(self.T)
+        #     else:
+        #         print("No MQTT message received during the period.")
+
+        # def update_T_from_cb(self):
+        url = link + self.id
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            entity = response.json()
+            self.T = entity["period"]["value"]["duration"]
+
+        else:
+            print(f"Failed to retrieve entity: {response.status_code}")
+            print(response.json())
+
+    def check_for_update_T(self):
+        print(MQTT_notifications)
+        for notification in MQTT_notifications:
+            if self.id in notification:
+                self.T = notification[self.id]
+                print(self.T)
+                MQTT_notifications.remove(notification)
+                break
 
 
 if __name__ == "__main__":
