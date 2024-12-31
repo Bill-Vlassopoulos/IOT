@@ -1,5 +1,10 @@
+import sys
+import os
 import json
 import paho.mqtt.client as mqtt
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from model.globals import message_received
 
 # MQTT broker details
@@ -23,9 +28,11 @@ def on_message(client, userdata, msg):
         pretty_payload = json.dumps(payload, indent=4)
         print(f"Topic: {msg.topic}\nMessage: {pretty_payload}")
         message_received = True
+        print("\nMessage received=", message_received)
     except json.JSONDecodeError:
         print(f"Topic: {msg.topic}\nMessage: {msg.payload.decode()}")
         message_received = True
+        print("\nMessage received=", message_received)
 
 
 # Create an MQTT client instance
