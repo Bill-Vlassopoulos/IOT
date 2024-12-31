@@ -1,5 +1,6 @@
 import json
 import paho.mqtt.client as mqtt
+from model.globals import message_received
 
 # MQTT broker details
 MQTT_BROKER = "150.140.186.118"
@@ -16,12 +17,15 @@ def on_connect(client, userdata, flags, rc):
 
 # Callback when a PUBLISH message is received from the server
 def on_message(client, userdata, msg):
+    global message_received
     try:
         payload = json.loads(msg.payload.decode())
         pretty_payload = json.dumps(payload, indent=4)
         print(f"Topic: {msg.topic}\nMessage: {pretty_payload}")
+        message_received = True
     except json.JSONDecodeError:
         print(f"Topic: {msg.topic}\nMessage: {msg.payload.decode()}")
+        message_received = True
 
 
 # Create an MQTT client instance
