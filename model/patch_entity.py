@@ -58,11 +58,14 @@ def patch_entity(url):
     except Exception as e:
         print(f"Error while updating entity {url}: {e}")
 
-# Infinite loop to patch all entities every 30 seconds
-try:
-    while True:
-        for url in entity_urls:
-            patch_entity(url)  # Patch each entity
-        time.sleep(30)  # Wait for 30 seconds before the next round of patches
-except KeyboardInterrupt:
-    print("Script stopped by user.")
+
+patch_entity(entity_urls[0])  # Patch the first entity
+
+# # Infinite loop to patch all entities every 30 seconds
+# try:
+#     while True:
+#         for url in entity_urls:
+#             patch_entity(url)  # Patch each entity
+#         time.sleep(30)  # Wait for 30 seconds before the next round of patches
+# except KeyboardInterrupt:
+#     print("Script stopped by user.")
