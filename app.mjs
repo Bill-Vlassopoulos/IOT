@@ -42,6 +42,10 @@ app.get("/map", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "layouts", "dashboard-map.html"));
 });
 
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "view", "layouts", "admin.html"));
+})
+
 app.get("/test", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "layouts", "mqtt-test.html"));
 });

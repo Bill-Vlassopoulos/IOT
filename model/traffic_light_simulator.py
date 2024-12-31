@@ -183,6 +183,9 @@ class Traffic_Juction:
         self.T = T
         self.traffic_lights = []
 
+    def set_T(self, T):
+        self.T = T
+
     def add_traffic_light(self, traffic_light):
         self.traffic_lights.append(traffic_light)
 

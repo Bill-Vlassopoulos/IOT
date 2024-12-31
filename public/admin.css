@@ -1,0 +1,24 @@
+/* General Reset */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.admin {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+#periodos {
+    width: 50%;
+    margin-top: 2%;
+}
+
+#submit {
+    margin-top: 2%;
+}

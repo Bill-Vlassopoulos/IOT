@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="/admin.css">
+
+</head>
+
+<body>
+    <form class="admin" action="/admin" method="GET">
+        <!-- i want a dropdown list -->
+        <fieldset>
+            <legend>Ρύθμιση Περιόδου</legend>
+            <div>
+                <label for="dropdown">Διαλεξε μια διασταύρωση:</label>
+                <select id="dropdown" name="diastavrosi">
+            </div>
+            </select>
+            <div>
+                <label for="periodos">Διάλεξε μια περίοδο:</label>
+                <input type="number" name="periodos" id="periodos" min=30 max=120
+                    placeholder="Διάλεξε μεταξύ 30-120 sec">
+            </div>
+        </fieldset>
+
+        <h1>Φανάρια</h1>
+        <label for="dropdown1">Διάλεξε ένα φανάρι</label>
+        <select id="dropdown1" name="fanaria">
+
+        </select>
+
+        <button type="submit" id="submit">Submit</button>
+
+    </form>
+
+    <script src="admin.mjs" type="module"></script>
+</body>
+
+</html>
