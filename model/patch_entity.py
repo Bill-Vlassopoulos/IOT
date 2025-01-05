@@ -48,8 +48,23 @@ def patch_entity(url):
     #     }
     # }
 
+    # data = {
+    #     "period": {"type": "StructuredValue", "value": {"duration": "40"}},
+    # }
+
     data = {
-        "period": {"type": "StructuredValue", "value": {"duration": "20"}},
+        "period": {"type": "StructuredValue", "value": {"duration": "40"}},
+        "mode": {"type": "Integer", "value": 1},
+        "fixed_schedule": {
+            "type": "StructuredValue",
+            "value": [
+                {"v3_omada14_fanari_0": 20},
+                {"v3_omada14_fanari_1": 30},
+                {"v3_omada14_fanari_2": 15},
+                {"v3_omada14_fanari_3": 35},
+            ],
+        },
+        "ptl": {"type": "Integer", "value": -1},
     }
 
     # Send the PATCH request

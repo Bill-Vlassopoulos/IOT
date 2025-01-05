@@ -41,14 +41,23 @@ def main():
     junction_0.add_traffic_light(fanari_3)
 
     while True:
-        junction_0.check_for_update_T_cb()
+        junction_0.check_for_cb_update()
         for i in range(3):
             for traffic_light in junction_0.traffic_lights:
                 traffic_light.set_random_waiting_vehicles()
                 traffic_light.patch_waiting_vehicles()
             time.sleep(float(junction_0.T) / 3)
-
-        junction_0.traffic_lights_schedule()
+        if junction_0.mode == 0:
+            junction_0.traffic_lights_schedule()
+        elif junction_0.mode == 1:
+            if junction_0.ptl == -1:
+                junction_0.static_schedule()
+            elif junction_0.ptl > 0:
+                junction_0.static_schedule()
+                junction_0.ptl -= 1
+                if junction_0.ptl == 0:
+                    junction_0.mode = 0
+                junction_0.general_cb_patch()
 
     # junction_0.traffic_lights_schedule()
 
@@ -249,6 +258,8 @@ class Traffic_Juction:
         self.name = name
         self.T = T
         self.traffic_lights = []
+        self.ptl = 0
+        self.mode = 0
 
     def set_T(self, T):
         self.T = T
@@ -319,6 +330,90 @@ class Traffic_Juction:
 
         return timeframes
 
+    def static_schedule(self):
+        url = link + self.id
+        response = requests.get(url)
+        gaptime = 2
+        orangetime = 2
+        self.T = float(self.T)
+
+        if response.status_code == 200:
+            entity = response.json()
+            # print("Full entity:")
+            # print(json.dumps(entity, indent=4))
+
+            fixed_schedule = entity["fixed_schedule"]["value"]
+
+            percentages = [
+                fixed_schedule[0][self.traffic_lights[0].id],
+                fixed_schedule[1][self.traffic_lights[1].id],
+                fixed_schedule[2][self.traffic_lights[2].id],
+                fixed_schedule[3][self.traffic_lights[3].id],
+            ]
+
+            print("Fanari 0:", percentages[0])
+            print("Fanari 1:", percentages[1])
+            print("Fanari 2:", percentages[2])
+            print("Fanari 3:", percentages[3])
+
+            overall_green_time = (
+                self.T - len(self.traffic_lights) * (orangetime) - 4 * gaptime
+            )
+
+            green_times = [
+                overall_green_time * (percentages[0] / 100),
+                overall_green_time * (percentages[1] / 100),
+                overall_green_time * (percentages[2] / 100),
+                overall_green_time * (percentages[3] / 100),
+            ]
+            all_times = {}
+            i = 0
+            for traffic_light in self.traffic_lights:
+                all_times[traffic_light.id] = green_times[i]
+                i += 1
+
+            timeframes = {}
+            previous_time = datetime.datetime.now()
+            for key in all_times:
+                start_time = previous_time
+                end_time = start_time + datetime.timedelta(seconds=all_times[key])
+                timeframes[key] = [
+                    {
+                        "phase": "Green",
+                        "startTime": start_time.isoformat(),
+                        "endTime": end_time.isoformat(),
+                    },
+                    {
+                        "phase": "Orange",
+                        "startTime": end_time.isoformat(),
+                        "endTime": (
+                            end_time + datetime.timedelta(seconds=orangetime)
+                        ).isoformat(),
+                    },
+                    {"phase": "Red", "startTime": "None", "endTime": "None"},
+                ]
+
+                # green_duration = datetime.datetime.fromisoformat(
+                #     timeframes[key]["greentime"]["endtime"]
+                # ) - datetime.datetime.fromisoformat(
+                #     timeframes[key]["greentime"]["starttime"]
+                # )
+                # print(f"Green duration for {key}: {green_duration}")
+                previous_time = (
+                    end_time
+                    + datetime.timedelta(seconds=orangetime)
+                    + datetime.timedelta(seconds=gaptime)
+                )
+
+            # print(timeframes)
+            print(json.dumps(timeframes, indent=4, ensure_ascii=False))
+
+            self.share_schedule(timeframes)
+
+        else:
+            print(f"Failed to retrieve entity: {response.status_code}")
+            print(response.json())
+
     def share_schedule(self, timeframes):
         for traffic_light in self.traffic_lights:
             if traffic_light.id in timeframes:
@@ -365,36 +460,45 @@ class Traffic_Juction:
             print(response.json())
         print("T: ", self.T)
 
+    def check_for_cb_update(self):
+        url = link + self.id
+        response = requests.get(url)
 
-# class PeriodicTask:
-#     def __init__(self, interval, funcs, **kwargs):
-#         self.interval = interval
-#         self.funcs = funcs
-#         self.kwargs = kwargs
-#         self.timer = None
-#         self.running = False
+        if response.status_code == 200:
+            entity = response.json()
+            if self.T != entity["period"]["value"]["duration"]:
+                self.T = entity["period"]["value"]["duration"]
+                # print("T updated to ", self.T)
+            if self.mode != entity["mode"]["value"]:
+                self.mode = entity["mode"]["value"]
+                # print("Mode updated to ", self.mode)
+            if self.ptl != entity["ptl"]["value"]:
+                self.ptl = entity["ptl"]["value"]
+                # print("Ptl updated to ", self.ptl)
+        else:
+            print(f"Failed to retrieve entity: {response.status_code}")
+            print(response.json())
+        print("T: ", self.T)
+        print("Mode: ", self.mode)
+        print("Ptl: ", self.ptl)
 
-#     def start(self):
-#         self.running = True
-#         self._run()
+    def general_cb_patch(self):
+        url = link + self.id + "/attrs"
+        data = {
+            "mode": {"type": "Integer", "value": self.mode},
+            "ptl": {"type": "Integer", "value": self.ptl},
+        }
 
-#     def _run(self):
-#         if self.running:
-#             for func in self.funcs:
-#                 func(**self.kwargs)
-#             self.timer = threading.Timer(self.interval, self._run)
-#             self.timer.start()
-
-#     def stop(self):
-#         self.running = False
-#         if self.timer:
-#             self.timer.cancel()
-
-#     def update_interval(self, interval):
-#         self.interval = interval
-#         print("Interval updated to ", interval)
-#         self.stop()
-#         self.start()
+        try:
+            response = requests.patch(url, json=data, headers=headers)
+            if response.status_code == 204:
+                # print(f"Entity {url} updated successfully")
+                pass
+            else:
+                print(f"Failed to update entity {url}: {response.status_code}")
+                print(response.json())
+        except Exception as e:
+            print(f"Error while updating entity {url}: {e}")
 
 
 if __name__ == "__main__":
