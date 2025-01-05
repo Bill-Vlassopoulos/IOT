@@ -53,7 +53,7 @@ def patch_entity(url):
     # }
 
     data = {
-        "period": {"type": "StructuredValue", "value": {"duration": "40"}},
+        "period": {"type": "StructuredValue", "value": {"duration": "90"}},
         "mode": {"type": "Integer", "value": 1},
         "fixed_schedule": {
             "type": "StructuredValue",

@@ -1,5 +1,3 @@
-
-
 const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt"; // WebSocket URL for MQTT
 //let currentTopic = "v3_fanaria/v3_omada14_fanari_14"; // Initial topic to subscribe to
 
@@ -64,10 +62,10 @@ const options = {
 
 // Connect to the broker
 client.connect(options);
-
+//[38.266639, 21.798573]
 //Initialize the map
 document.addEventListener("DOMContentLoaded", function () {
-  var map = L.map("map").setView([38.266639, 21.798573], 13); // Coordinates for Patras, Greece
+  var map = L.map("map").setView([38.286366, 21.797975], 14); // Coordinates for Patras, Greece
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
@@ -85,6 +83,38 @@ document.addEventListener("DOMContentLoaded", function () {
   var trafficLightIcon = L.icon({
     iconUrl: "traffic-light.png",
     iconSize: [25, 30], // Adjust the size as needed
+    iconAnchor: [7, 30],
+    popupAnchor: [4, -30],
+    shadowSize: [25, 25],
+  });
+
+  var junctionIcon = L.icon({
+    iconUrl: "junction.png",
+    iconSize: [80, 80], // Adjust the size as needed
+    iconAnchor: [7, 30],
+    popupAnchor: [4, -30],
+    shadowSize: [25, 25],
+  });
+
+  var greenIcon = L.icon({
+    iconUrl: "green_traffic_light.png",
+    iconSize: [15, 25], // Adjust the size as needed
+    iconAnchor: [7, 30],
+    popupAnchor: [4, -30],
+    shadowSize: [25, 25],
+  });
+
+  var orangeIcon = L.icon({
+    iconUrl: "orange_traffic_light.png",
+    iconSize: [12, 25], // Adjust the size as needed
+    iconAnchor: [7, 30],
+    popupAnchor: [4, -30],
+    shadowSize: [25, 25],
+  });
+
+  var redIcon = L.icon({
+    iconUrl: "red_traffic_light.png",
+    iconSize: [10, 25], // Adjust the size as needed
     iconAnchor: [7, 30],
     popupAnchor: [4, -30],
     shadowSize: [25, 25],
@@ -152,28 +182,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const goBackButton = document.getElementById("goBack");
   const dashboardbtn = document.getElementById("openDashboard");
   var markers = [];
+  let updateIconInterval;
 
   // Fetch junctions data dynamically
   // Fetch junctions data dynamically
   fetch("/api/junctions")
     .then((response) => response.json())
     .then((data) => {
-      const locations = data.junctions; // Assuming response has { junctions: [...] }
+      const locations = data.junctions;
 
-      // Add markers for each junction
       locations.forEach(function (location, index) {
         var marker = L.marker([location.lat, location.lng], {
-          icon: defaultIcon,
+          icon: junctionIcon,
         })
           .addTo(map)
           .bindPopup(location.title)
           .on("click", function () {
             if (lastClickedMarker) {
-              lastClickedMarker.setIcon(defaultIcon);
+              lastClickedMarker.setIcon(junctionIcon);
               trafficLightMarkers.forEach(function (tlMarker) {
                 map.removeLayer(tlMarker);
               });
               trafficLightMarkers = [];
+              clearInterval(updateInterval); // Clear previous interval
             }
 
             lastClickedMarker = marker;
@@ -182,28 +213,18 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Current Junction ID:", currentJunctionId);
             subscribeToTopic(`v3_fanaria/${currentJunctionId}`);
 
-            // Fetch traffic lights for this junction
             fetch(`/api/traffic-lights/${location.id}`)
               .then((response) => response.json())
               .then((tlData) => {
-                const trafficLights = tlData.trafficLights; // Array of traffic lights
-                console.log(
-                  "Traffic lights for junction:",
-                  location.id,
-                  trafficLights
-                );
-
-                // Ensure all traffic lights are processed
+                const trafficLights = tlData.trafficLights;
                 trafficLights.forEach(function (tl) {
-                  console.log("Adding traffic light marker:", tl);
-
+                  console.log("Traffic Light Schedule:", tl.schedule);
                   var tlMarker = L.marker([tl.lat, tl.lng], {
-                    icon: trafficLightIcon,
+                    icon: getIconBasedOnSchedule(tl.schedule),
                   })
                     .addTo(map)
-                    .bindPopup(` ${tl.title}`) // Customize this as needed
+                    .bindPopup(` ${tl.title}`)
                     .on("click", function () {
-                      // Show the dashboard button when a traffic light is clicked
                       dashboardbtn.classList.remove("hidden");
                       lastclickedtrafficlight = {
                         junction: location.id,
@@ -216,15 +237,24 @@ document.addEventListener("DOMContentLoaded", function () {
                         currentTrafficLightId
                       );
                     });
+
                   trafficLightMarkers.push(tlMarker);
                 });
+
+                // Start updating traffic light status every second
+                updateIconInterval = setInterval(() => {
+                  trafficLights.forEach((tl, index) => {
+                    const icon = getIconBasedOnSchedule(tl.schedule);
+                    trafficLightMarkers[index].setIcon(icon);
+                  });
+                }, 1000);
               })
               .catch((error) => {
                 console.error("Error fetching traffic lights: ", error);
               });
 
-            map.removeLayer(marker); // Hide the location marker when clicked
-            goBackButton.classList.remove("hidden"); // Show the go back button
+            map.removeLayer(marker);
+            goBackButton.classList.remove("hidden");
           });
         markers.push(marker);
       });
@@ -232,6 +262,30 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch((error) => {
       console.error("Error fetching junctions: ", error);
     });
+
+  function getIconBasedOnSchedule(schedule) {
+    const currentTime = new Date();
+    const greeceOffset = 2 * 60; // Greece is UTC+2
+    const greeceTime = new Date(
+      currentTime.getTime() + greeceOffset * 60 * 1000
+    );
+    const currentISOTime = greeceTime.toISOString();
+    const greenStartTime = schedule[0]["startTime"];
+    const greenEndTime = schedule[0]["endTime"];
+    const orangeStartTime = schedule[1]["startTime"];
+    const orangeEndTime = schedule[1]["endTime"];
+
+    if (currentISOTime >= greenStartTime && currentISOTime < greenEndTime) {
+      return greenIcon;
+    } else if (
+      currentISOTime >= orangeStartTime &&
+      currentISOTime < orangeEndTime
+    ) {
+      return orangeIcon;
+    } else {
+      return redIcon;
+    }
+  }
 
   // // Add markers for each location
   // locations.forEach(function (location, index) {
@@ -274,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Reset map to initial state
   goBackButton.addEventListener("click", function () {
-    map.flyTo([38.266639, 21.798573], 13);
+    map.flyTo([38.286366, 21.797975], 14);
     unsubscribeFromTopic(`v3_fanaria/${currentJunctionId}`);
 
     markers.forEach(function (marker) {
@@ -287,12 +341,13 @@ document.addEventListener("DOMContentLoaded", function () {
     trafficLightMarkers = [];
 
     if (lastClickedMarker) {
-      lastClickedMarker.setIcon(defaultIcon);
+      lastClickedMarker.setIcon(junctionIcon);
     }
     lastClickedMarker = null;
 
     goBackButton.classList.add("hidden");
     dashboardbtn.classList.add("hidden");
+    clearInterval(updateIconInterval);
   });
 });
 
@@ -472,15 +527,12 @@ function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
           orangeStartTime,
           orangeEndTime,
         };
-
       }
     })
     .catch((error) => {
       console.log("Error fetching data:", error);
     });
 }
-
-
 
 // Function to update the traffic chart with the new waiting cars data
 function updateTrafficChart(waitingCars) {
@@ -536,7 +588,6 @@ const red_light = document.querySelector(".fanaraki #red_light");
 const orange_light = document.querySelector(".fanaraki #orange_light");
 const green_light = document.querySelector(".fanaraki #green_light");
 
-
 function updateTrafficLightColor() {
   const currentTime = new Date();
   const greeceOffset = 2 * 60; // Greece is UTC+2
@@ -548,12 +599,14 @@ function updateTrafficLightColor() {
   console.log("Green Start Time:", greenStartTime);
   console.log("Green End Time:", greenEndTime);
 
-
   if (currentISOTime >= greenStartTime && currentISOTime < greenEndTime) {
     green_light.style.backgroundColor = "green";
     orange_light.style.backgroundColor = "gray";
     red_light.style.backgroundColor = "gray";
-  } else if (currentISOTime >= orangeStartTime && currentISOTime < orangeEndTime) {
+  } else if (
+    currentISOTime >= orangeStartTime &&
+    currentISOTime < orangeEndTime
+  ) {
     green_light.style.backgroundColor = "gray";
     orange_light.style.backgroundColor = "orange";
     red_light.style.backgroundColor = "gray";
@@ -563,8 +616,6 @@ function updateTrafficLightColor() {
     red_light.style.backgroundColor = "red";
   }
 }
-
-
 
 // document.addEventListener("keydown", function (event) {
 //   switch (event.key) {

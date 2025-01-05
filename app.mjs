@@ -7,7 +7,6 @@ import { dirname } from "path";
 import path from "path";
 import express from "express";
 import axios from "axios";
-import PythonScriptManager from "./public/patch_manager.mjs";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -44,7 +43,7 @@ app.get("/map", (req, res) => {
 
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "layouts", "admin.html"));
-})
+});
 
 app.get("/test", (req, res) => {
   res.sendFile(path.join(__dirname, "view", "layouts", "mqtt-test.html"));
@@ -108,7 +107,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
       const trafficLight = await axios.get(
         "http://150.140.186.118:1026/v2/entities?id=" +
-        cb_data_junction.fanaria.value[i]
+          cb_data_junction.fanaria.value[i]
       );
       let cb_data_trafficlight = JSON.stringify(trafficLight.data);
       cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
@@ -124,6 +123,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
         lat: cb_data_trafficlight[0].location.value.coordinates[0],
         lng: cb_data_trafficlight[0].location.value.coordinates[1],
         title: cb_data_trafficlight[0].title.value,
+        schedule: cb_data_trafficlight[0].schedule.value,
       });
     }
     res.json({ trafficLights: trafficlightsinfo });
@@ -161,8 +161,8 @@ app.get(
     // console.log(cb_data_dashboard.waitingCars.value, cb_data_dashboard.violations.value);
     let trafficInfo = {
       "waiting-cars": cb_data_dashboard.waitingCars.value,
-      "violations": cb_data_dashboard.violations.value,
-      "colors": cb_data_dashboard.schedule.value,
+      violations: cb_data_dashboard.violations.value,
+      colors: cb_data_dashboard.schedule.value,
     };
 
     // If traffic data exists, send it as a response
