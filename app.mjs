@@ -73,7 +73,7 @@ app.get("/signout", logInController.doLogout);
 app.get("/api/junctions", async (req, res) => {
   try {
     const response = await axios.get(
-      "http://150.140.186.118:1026/v2/entities?type=v2_omada14_diastavrosi"
+      "http://150.140.186.118:1026/v2/entities?type=v3_omada14_diastavrosi"
     );
     let cb_data = JSON.stringify(response.data);
     // console.log(response.data);

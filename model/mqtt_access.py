@@ -5,12 +5,10 @@ import paho.mqtt.client as mqtt
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from model.globals import message_received
-
 # MQTT broker details
 MQTT_BROKER = "150.140.186.118"
 MQTT_PORT = 1883
-MQTT_TOPIC = "v2_fanaria/#"  # Subscribe to all subtopics under v2_fanaria
+MQTT_TOPIC = "v3_fanaria/#"  # Subscribe to all subtopics under v2_fanaria
 
 
 # Callback when the client receives a CONNACK response from the server

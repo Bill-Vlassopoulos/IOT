@@ -1,36 +1,36 @@
 import requests
-from datetime import datetime,timezone
+from datetime import datetime, timezone
 import time
 import random
 
-url="http://150.140.186.118:1026/v2/entities/v2_omada14_diastavrosi_0/attrs"
+url = "http://150.140.186.118:1026/v2/entities/v3_omada14_diastavrosi_0/attrs"
 # List of entity URLs
 entity_urls = [
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_0/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_1/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_2/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_3/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_4/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_5/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_6/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_7/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_8/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_9/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_10/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_11/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_12/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_13/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_14/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_15/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_16/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_17/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_18/attrs",
-    "http://150.140.186.118:1026/v2/entities/v2_omada14_fanari_19/attrs"
-    
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_0/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_1/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_2/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_3/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_4/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_5/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_6/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_7/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_8/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_9/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_10/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_11/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_12/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_13/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_14/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_15/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_16/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_17/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_18/attrs",
+    "http://150.140.186.118:1026/v2/entities/v3_omada14_fanari_19/attrs",
 ]
 
 # Common headers for all requests
 headers = {"Content-Type": "application/json"}
+
 
 def patch_entity(url):
     # Get the current time in the required format
@@ -48,8 +48,8 @@ def patch_entity(url):
     #     }
     # }
 
-    data={
-        "period": {"type": "StructuredValue", "value": {"duration": "40"}},
+    data = {
+        "period": {"type": "StructuredValue", "value": {"duration": "20"}},
     }
 
     # Send the PATCH request

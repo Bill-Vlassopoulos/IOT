@@ -1,7 +1,7 @@
 import requests
 import json
 
-url = "http://150.140.186.118:1026/v2/entities/v2_omada14_diastavrosi_0"
+url = "http://150.140.186.118:1026/v2/entities/v3_omada14_diastavrosi_0"
 headers = {"Accept": "application/json"}
 
 response = requests.get(url, headers=headers)

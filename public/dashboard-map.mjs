@@ -1,7 +1,7 @@
 
 
 const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt"; // WebSocket URL for MQTT
-//let currentTopic = "v2_fanaria/v2_omada14_fanari_14"; // Initial topic to subscribe to
+//let currentTopic = "v3_fanaria/v3_omada14_fanari_14"; // Initial topic to subscribe to
 
 let lastclickedtrafficlight = {};
 let currentJunctionId = null;
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
             map.flyTo([location.lat, location.lng], 18);
             currentJunctionId = location.id;
             console.log("Current Junction ID:", currentJunctionId);
-            subscribeToTopic(`v2_fanaria/${currentJunctionId}`);
+            subscribeToTopic(`v3_fanaria/${currentJunctionId}`);
 
             // Fetch traffic lights for this junction
             fetch(`/api/traffic-lights/${location.id}`)
@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Reset map to initial state
   goBackButton.addEventListener("click", function () {
     map.flyTo([38.266639, 21.798573], 13);
-    unsubscribeFromTopic(`v2_fanaria/${currentJunctionId}`);
+    unsubscribeFromTopic(`v3_fanaria/${currentJunctionId}`);
 
     markers.forEach(function (marker) {
       marker.addTo(map);
@@ -318,7 +318,7 @@ openDashboardBtn.addEventListener("click", () => {
 
 // Hide the dashboard
 closeDashboardBtn.addEventListener("click", () => {
-  unsubscribeFromTopic(`v2_fanaria/${currentTrafficLightId}`);
+  unsubscribeFromTopic(`v3_fanaria/${currentTrafficLightId}`);
   dashboard.classList.remove("visible");
   mapElement.classList.remove("map-blurred");
   openDashboardBtn.classList.remove("hidden");
@@ -428,7 +428,7 @@ closeDashboardBtn.addEventListener("click", () => {
 // const green_light = fanaraki(":nth-child(3)");
 
 function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
-  subscribeToTopic(`v2_fanaria/${trafficLightId}`);
+  subscribeToTopic(`v3_fanaria/${trafficLightId}`);
   // Fetch traffic info from the backend
   fetch(`/api/traffic-info/${junctionId}/${trafficLightId}`)
     .then((response) => response.json())
