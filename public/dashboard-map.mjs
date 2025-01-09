@@ -4,7 +4,7 @@ const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt"; // WebSocket URL for MQTT
 let lastclickedtrafficlight = {};
 let currentJunctionId = null;
 let currentTrafficLightId = null;
-
+let trafficLights = [];
 const client = new Paho.MQTT.Client(MQTT_BROKER, "clientId");
 
 // Define the callback when the client connects to the broker
@@ -18,7 +18,36 @@ client.onConnect = function () {
 client.onMessageArrived = function (message) {
   console.log("Topic:", message.destinationName);
   console.log("Something changed");
-  fetchTrafficDataAndUpdateDashboard(currentJunctionId, currentTrafficLightId);
+  //console.log("New Schedule:", message.payloadString);
+
+  const jsonData = JSON.parse(message.payloadString);
+  const trafficLightData = jsonData.data[0]; // Assuming you want the first traffic light in the data array
+  const schedule = trafficLightData.schedule.value;
+
+  console.log("Schedule:", schedule);
+  console.log("Traffic Lights array:", trafficLights);
+
+  console.log("Traffic Light Data:", trafficLightData);
+  console.log("Traffic Light ID:", trafficLightData.id);
+  console.log("Message Destination Name:", message.destinationName);
+
+  if (message.destinationName.includes(`${trafficLightData.id}`)) {
+    let trafficLight = trafficLights.find(
+      (tl) => tl.id === trafficLightData.id
+    );
+    if (trafficLight) {
+      trafficLight.schedule = schedule;
+      console.log("Updated Traffic Light Schedule:", schedule);
+    } else {
+      console.log("Traffic light with the specified ID not found.");
+    }
+  }
+  if (dashboard.classList.contains("visible")) {
+    fetchTrafficDataAndUpdateDashboard(
+      currentJunctionId,
+      currentTrafficLightId
+    );
+  }
 };
 
 // Callback for when the connection is lost
@@ -211,13 +240,14 @@ document.addEventListener("DOMContentLoaded", function () {
             map.flyTo([location.lat, location.lng], 18);
             currentJunctionId = location.id;
             console.log("Current Junction ID:", currentJunctionId);
-            subscribeToTopic(`v3_fanaria/${currentJunctionId}`);
+            //subscribeToTopic(`v3_fanaria/${currentJunctionId}`);
 
             fetch(`/api/traffic-lights/${location.id}`)
               .then((response) => response.json())
               .then((tlData) => {
-                const trafficLights = tlData.trafficLights;
+                trafficLights = tlData.trafficLights;
                 trafficLights.forEach(function (tl) {
+                  subscribeToTopic(`v3_fanaria/${tl.id}`);
                   console.log("Traffic Light Schedule:", tl.schedule);
                   var tlMarker = L.marker([tl.lat, tl.lng], {
                     icon: getIconBasedOnSchedule(tl.schedule),
@@ -329,7 +359,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Reset map to initial state
   goBackButton.addEventListener("click", function () {
     map.flyTo([38.286366, 21.797975], 14);
-    unsubscribeFromTopic(`v3_fanaria/${currentJunctionId}`);
+    //usubscribeFromTopic(`v3_fanaria/${currentJunctionId}`);
+    unsubscribeFromTopic("v3_fanaria/#");
 
     markers.forEach(function (marker) {
       marker.addTo(map);
