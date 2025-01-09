@@ -1,125 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Junction with Four Roads</title>
     <script src="https://pixijs.download/release/pixi.js"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
 
-        canvas {
-            display: block;
-        }
+      canvas {
+        display: block;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <script type="module">
-        // Initialize the application
+      // Initialize the application
 
-        const app = new PIXI.Application();
-        await app.init({ width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x006400 });
+      const app = new PIXI.Application();
+
+      const cars = [];
+
+      async function setup() {
+        await app.init({
+          width: window.innerWidth,
+          height: window.innerHeight,
+          backgroundColor: 0x006400,
+        });
         document.body.appendChild(app.canvas);
+      }
 
-        function resize() {
-            app.renderer.resize(window.innerWidth, window.innerHeight);
-            // Update road and traffic light positions as needed
-            updatePositions();
-        }
+      async function preload() {
+        const assets = [
+          { alias: "red-car", src: "../game/red_car.png" },
+          { alias: "white-car", src: "../game/white-car.png" },
+          { alias: "black-car", src: "../game/black-car.png" },
+        ];
+        await PIXI.Assets.load(assets);
+      }
 
-        // Listen for window resize events
-        window.addEventListener('resize', resize);
+      (async () => {
+        await setup();
+        await preload();
+      })();
 
-        async function preload() {
-            const assets = [
-                { alias: 'red-car', src: 'game/red_car.png' },
-                { alias: 'white-car', src: 'game/white-car.png' },
-                { alias: 'black-car', src: 'game/black-car.png' },
-            ];
-            await PIXI.Assets.load(assets);
-        }
+      function resize() {
+        app.renderer.resize(window.innerWidth, window.innerHeight);
+        // Update road and traffic light positions as needed
+        updatePositions();
+      }
 
-        // Create roads
-        const roadWidth = 120;
+      // Listen for window resize events
+      window.addEventListener("resize", resize);
 
-        // Horizontal road
-        const horizontalRoad = new PIXI.Graphics();
+      // Create roads
+      const roadWidth = 120;
+
+      // Horizontal road
+      const horizontalRoad = new PIXI.Graphics();
+      horizontalRoad.beginFill(0x333333);
+      horizontalRoad.drawRect(0, -roadWidth / 2, app.screen.width, roadWidth);
+      horizontalRoad.endFill();
+      horizontalRoad.position.set(0, app.screen.height / 2);
+      app.stage.addChild(horizontalRoad);
+
+      // Vertical road
+      const verticalRoad = new PIXI.Graphics();
+      verticalRoad.beginFill(0x333333);
+      verticalRoad.drawRect(-roadWidth / 2, 0, roadWidth, app.screen.height);
+      verticalRoad.endFill();
+      verticalRoad.position.set(app.screen.width / 2, 0);
+      app.stage.addChild(verticalRoad);
+
+      const carContainer = new PIXI.Container();
+
+      app.stage.addChild(carContainer);
+
+      const carCount = 10;
+      const carAssets = ["red-car", "white-car", "black-car"];
+
+      for (let i = 0; i < carCount; i++) {
+        const carAsset = carAssets[i % carAssets.length];
+        const car = PIXI.Sprite.from(carAsset);
+
+        car.anchor.set(0.5);
+
+        car.direction = Math.random() * Math.PI * 2;
+        car.speed = 2 + Math.random() * 2;
+        car.turnSpeed = Math.random() - 0.8;
+
+        car.x = Math.random() * app.screen.width;
+        car.y = Math.random() * app.screen.height;
+        car.scale.set(0.5 + Math.random() * 0.2);
+
+        carContainer.addChild(car);
+        cars.push(car);
+      }
+
+      // Function to update positions based on screen size
+      function updatePositions() {
+        horizontalRoad.clear();
         horizontalRoad.beginFill(0x333333);
         horizontalRoad.drawRect(0, -roadWidth / 2, app.screen.width, roadWidth);
         horizontalRoad.endFill();
         horizontalRoad.position.set(0, app.screen.height / 2);
-        app.stage.addChild(horizontalRoad);
 
-        // Vertical road
-        const verticalRoad = new PIXI.Graphics();
+        verticalRoad.clear();
         verticalRoad.beginFill(0x333333);
         verticalRoad.drawRect(-roadWidth / 2, 0, roadWidth, app.screen.height);
         verticalRoad.endFill();
         verticalRoad.position.set(app.screen.width / 2, 0);
-        app.stage.addChild(verticalRoad);
+      }
 
-        const carContainer = new PIXI.Container();
+      // Initial positioning
+      updatePositions();
 
-        app.stage.addChild(carContainer);
+      // Add a variable to count up the seconds our demo has been running
+      let elapsed = 0.0;
+      // Tell our application's ticker to run a new callback every frame, passing
+      // in the amount of time that has passed since the last tick
+      app.ticker.add((ticker) => {
+        // Add the time to our total elapsed time
+        elapsed += ticker.deltaTime;
+      });
 
-        const carCount = 10;
-        const carAssets = ['red-car', 'white-car', 'black-car'];
-
-        for (let i = 0; i < carCount; i++) {
-            const carAsset = carAssets[i % carAssets.length];
-            const car = PIXI.Sprite.from(carAsset);
-
-            car.anchor.set(0.5);
-
-            car.direction = Math.random() * Math.PI * 2;
-            car.speed = 2 + Math.random() * 2;
-            car.turnSpeed = Math.random() - 0.8;
-
-            car.x = Math.random() * app.screen.width;
-            car.y = Math.random() * app.screen.height;
-            car.scale.set(0.5 + Math.random() * 0.2);
-
-            carContainer.addChild(car);
-            cars.push(car);
-        }
-
-
-        // Function to update positions based on screen size
-        function updatePositions() {
-            horizontalRoad.clear();
-            horizontalRoad.beginFill(0x333333);
-            horizontalRoad.drawRect(0, -roadWidth / 2, app.screen.width, roadWidth);
-            horizontalRoad.endFill();
-            horizontalRoad.position.set(0, app.screen.height / 2);
-
-            verticalRoad.clear();
-            verticalRoad.beginFill(0x333333);
-            verticalRoad.drawRect(-roadWidth / 2, 0, roadWidth, app.screen.height);
-            verticalRoad.endFill();
-            verticalRoad.position.set(app.screen.width / 2, 0);
-
-        }
-
-
-        // Initial positioning
-        updatePositions();
-
-        // Add a variable to count up the seconds our demo has been running
-        let elapsed = 0.0;
-        // Tell our application's ticker to run a new callback every frame, passing
-        // in the amount of time that has passed since the last tick
-        app.ticker.add((ticker) => {
-            // Add the time to our total elapsed time
-            elapsed += ticker.deltaTime;
-        });
-
-        console.log("Plus-shaped junction with traffic lights added to the stage");
+      console.log(
+        "Plus-shaped junction with traffic lights added to the stage"
+      );
     </script>
-</body>
-
+  </body>
 </html>
