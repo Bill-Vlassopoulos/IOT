@@ -1,3 +1,6 @@
+//MQTT
+const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt";
+
 //VARIABLES
 let currentJunctionId = null;
 var lastClickedMarker = null;
@@ -6,6 +9,10 @@ let trafficLights = [];
 let lastclickedtrafficlight = {};
 var markers = [];
 const goBackButton = document.getElementById("goBack");
+let interval1, interval2, interval3, interval4;
+let updateIntervals = [interval1, interval2, interval3, interval4];
+let schedule1, schedule2, schedule3, schedule4;
+let schedules = [schedule1, schedule2, schedule3, schedule4];
 
 let title_fanari_1 = document.getElementById("fanari_1");
 let title_fanari_2 = document.getElementById("fanari_2");
@@ -36,6 +43,29 @@ const sliders = [
   },
 ];
 
+const fanarakia = [
+  {
+    green_light: document.getElementById("green_light1"),
+    orange_light: document.getElementById("orange_light1"),
+    red_light: document.getElementById("red_light1"),
+  },
+  {
+    green_light: document.getElementById("green_light2"),
+    orange_light: document.getElementById("orange_light2"),
+    red_light: document.getElementById("red_light2"),
+  },
+  {
+    green_light: document.getElementById("green_light3"),
+    orange_light: document.getElementById("orange_light3"),
+    red_light: document.getElementById("red_light3"),
+  },
+  {
+    green_light: document.getElementById("green_light4"),
+    orange_light: document.getElementById("orange_light4"),
+    red_light: document.getElementById("red_light4"),
+  },
+];
+
 //ICONS
 
 var defaultIcon = L.icon({
@@ -54,6 +84,109 @@ var trafficLightIcon = L.icon({
   shadowSize: [25, 25],
 });
 
+//MQTT CONNECTION
+
+const client = new Paho.MQTT.Client(MQTT_BROKER, "clientId");
+
+client.onConnect = function () {
+  console.log("Connected to MQTT broker");
+  // Subscribe to the initial topic
+  //subscribeToTopic(currentTopic);
+};
+
+client.onMessageArrived = function (message) {
+  console.log("Topic:", message.destinationName);
+  console.log("Something changed");
+  // console.log("Message:", message.payloadString);
+
+  const jsonData = JSON.parse(message.payloadString);
+  const trafficLightData = jsonData.data[0];
+
+  console.log("Traffic Light title:", trafficLightData.title.value);
+  let title = trafficLightData.title.value;
+  let schedule = trafficLightData.schedule.value;
+
+  if (title === "Φανάρι 1") {
+    schedules[0] = schedule;
+    updateTrafficLightColor(
+      schedule,
+      fanarakia[0].green_light,
+      fanarakia[0].orange_light,
+      fanarakia[0].red_light
+    );
+    console.log("Updated Fanari 1");
+  } else if (title === "Φανάρι 2") {
+    schedules[1] = schedule;
+    updateTrafficLightColor(
+      schedule,
+      fanarakia[1].green_light,
+      fanarakia[1].orange_light,
+      fanarakia[1].red_light
+    );
+    console.log("Updated Fanari 2");
+  } else if (title === "Φανάρι 3") {
+    schedules[2] = schedule;
+    updateTrafficLightColor(
+      schedule,
+      fanarakia[2].green_light,
+      fanarakia[2].orange_light,
+      fanarakia[2].red_light
+    );
+    console.log("Updated Fanari 3");
+  } else if (title === "Φανάρι 4") {
+    schedules[3] = schedule;
+    updateTrafficLightColor(
+      schedule,
+      fanarakia[3].green_light,
+      fanarakia[3].orange_light,
+      fanarakia[3].red_light
+    );
+    console.log("Updated Fanari 4");
+  }
+};
+
+// Callback for when the connection is lost
+client.onConnectionLost = function (responseObject) {
+  if (responseObject.errorCode !== 0) {
+    console.log("Connection lost: " + responseObject.errorMessage);
+  }
+};
+
+// Function to subscribe to a topic
+function subscribeToTopic(topic) {
+  client.subscribe(topic, {
+    onSuccess: function () {
+      console.log(`Subscribed to topic: ${topic}`);
+    },
+    onFailure: function (err) {
+      console.error(`Failed to subscribe to topic: ${topic}`, err);
+    },
+  });
+}
+
+// Function to unsubscribe from a topic
+function unsubscribeFromTopic(topic) {
+  client.unsubscribe(topic, {
+    onSuccess: function () {
+      console.log(`Unsubscribed from topic: ${topic}`);
+    },
+    onFailure: function (err) {
+      console.error(`Failed to unsubscribe from topic: ${topic}`, err);
+    },
+  });
+}
+
+// Set up the connection options
+const options = {
+  onSuccess: client.onConnect,
+  onFailure: function (e) {
+    console.log("Failed to connect:", e);
+  },
+};
+
+// Connect to the broker
+client.connect(options);
+
 //MAP
 const map = L.map("map").setView([38.292488, 21.789119], 13); // Coordinates for Patras, Greece
 
@@ -63,6 +196,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 fetchJunctions(map);
+
+//FUNCTIONS
 
 async function fetchJunctions() {
   try {
@@ -109,6 +244,41 @@ async function fetchJunctions() {
             });
 
             trafficLights.forEach(function (tl) {
+              subscribeToTopic(`v3_fanaria/${tl.id}`);
+              console.log("Scheduled:", tl.schedule);
+              if (tl.title === "Φανάρι 1") {
+                schedules[0] = tl.schedule;
+                updateTrafficLightColor(
+                  schedules[0],
+                  fanarakia[0].green_light,
+                  fanarakia[0].orange_light,
+                  fanarakia[0].red_light
+                );
+              } else if (tl.title === "Φανάρι 2") {
+                schedules[1] = tl.schedule;
+                updateTrafficLightColor(
+                  schedules[1],
+                  fanarakia[1].green_light,
+                  fanarakia[1].orange_light,
+                  fanarakia[1].red_light
+                );
+              } else if (tl.title === "Φανάρι 3") {
+                schedules[2] = tl.schedule;
+                updateTrafficLightColor(
+                  schedules[2],
+                  fanarakia[2].green_light,
+                  fanarakia[2].orange_light,
+                  fanarakia[2].red_light
+                );
+              } else if (tl.title === "Φανάρι 4") {
+                schedules[3] = tl.schedule;
+                updateTrafficLightColor(
+                  schedules[3],
+                  fanarakia[3].green_light,
+                  fanarakia[3].orange_light,
+                  fanarakia[3].red_light
+                );
+              }
               var tlMarker = L.marker([tl.lat, tl.lng], {
                 icon: trafficLightIcon,
               })
@@ -128,6 +298,28 @@ async function fetchJunctions() {
                 });
 
               trafficLightMarkers.push(tlMarker);
+
+              let index;
+              if (tl.title === "Φανάρι 1") {
+                index = 0;
+              } else if (tl.title === "Φανάρι 2") {
+                index = 1;
+              } else if (tl.title === "Φανάρι 3") {
+                index = 2;
+              } else if (tl.title === "Φανάρι 4") {
+                index = 3;
+              }
+
+              if (index !== undefined) {
+                updateIntervals[index] = setInterval(() => {
+                  updateTrafficLightColor(
+                    schedules[index],
+                    fanarakia[index].green_light,
+                    fanarakia[index].orange_light,
+                    fanarakia[index].red_light
+                  );
+                }, 1000);
+              }
             });
           } catch (error) {
             console.error("Error fetching traffic lights: ", error);
@@ -163,6 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 goBackButton.addEventListener("click", function () {
+  unsubscribeFromTopic("v3_fanaria/#");
   map.flyTo([38.292488, 21.789119], 13);
 
   markers.forEach(function (marker) {
@@ -193,5 +386,60 @@ goBackButton.addEventListener("click", function () {
     output.textContent = "";
   });
 
+  let interval;
+
+  for (interval of updateIntervals) {
+    clearInterval(interval);
+  }
+
+  resetTrafficLightColor();
+
   goBackButton.classList.add("hidden");
 });
+
+function updateTrafficLightColor(
+  schedule,
+  green_light,
+  orange_light,
+  red_light
+) {
+  const currentTime = new Date();
+  const greeceOffset = 2 * 60; // Greece is UTC+2
+  const greeceTime = new Date(currentTime.getTime() + greeceOffset * 60 * 1000);
+  const currentISOTime = greeceTime.toISOString();
+
+  const greenStartTime = schedule[0]["startTime"];
+  const greenEndTime = schedule[0]["endTime"];
+  const orangeStartTime = schedule[1]["startTime"];
+  const orangeEndTime = schedule[1]["endTime"];
+
+  // const { greenStartTime, greenEndTime, orangeStartTime, orangeEndTime } =
+  //   window.trafficLightColorTimes || {};
+  // console.log("Green Start Time:", greenStartTime);
+  // console.log("Green End Time:", greenEndTime);
+
+  if (currentISOTime >= greenStartTime && currentISOTime < greenEndTime) {
+    green_light.style.backgroundColor = "green";
+    orange_light.style.backgroundColor = "gray";
+    red_light.style.backgroundColor = "gray";
+  } else if (
+    currentISOTime >= orangeStartTime &&
+    currentISOTime < orangeEndTime
+  ) {
+    green_light.style.backgroundColor = "gray";
+    orange_light.style.backgroundColor = "orange";
+    red_light.style.backgroundColor = "gray";
+  } else {
+    green_light.style.backgroundColor = "gray";
+    orange_light.style.backgroundColor = "gray";
+    red_light.style.backgroundColor = "red";
+  }
+}
+
+function resetTrafficLightColor() {
+  fanarakia.forEach((fanari) => {
+    fanari.green_light.style.backgroundColor = "gray";
+    fanari.orange_light.style.backgroundColor = "gray";
+    fanari.red_light.style.backgroundColor = "gray";
+  });
+}
