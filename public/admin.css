@@ -146,7 +146,7 @@ html {
   justify-content: space-around;
   align-items: center;
   height: 100%;
-  width: 50%;
+  width: 59%;
   border: 1px solid black;
 }
 
@@ -157,7 +157,7 @@ html {
   flex-direction: column-reverse;
   height: 100%;
   width: 100%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   flex: 1;
 }
 
@@ -168,7 +168,7 @@ html {
   align-items: center;
   height: 100%;
   width: 100%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   flex: 1;
 }
 
@@ -199,7 +199,7 @@ html {
   align-items: center;
   height: 100%;
   width: 100%;
-  border: 1px solid black;
+  border-top: 1px solid black;
   flex: 1;
 }
 
@@ -263,6 +263,38 @@ html {
 
 .pososto_fanari .output {
   margin-top: 20%;
+}
+
+.period-time {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.period-time label {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.period-time input {
+  width: 70%;
+  height: 30px;
+  margin-top: 1%;
+  border: 1px solid black;
+}
+
+.submit-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.submit {
+  margin-top: 3%;
 }
 
 /* ---------------------- switch --------------------------- */

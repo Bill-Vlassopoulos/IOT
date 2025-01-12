@@ -105,105 +105,122 @@
         </div>
       </div>
     </div>
-    <div class="lower-container">
-      <div class="control-panel">
-        <div class="general">
-          <div class="general-times">
-            <div class="orange_time">
-              <label for="orange_time">Orange Time</label>
-              <input type="range" name="orange_time" id="" />
+    <div class="submit-container">
+      <div class="lower-container">
+        <div class="control-panel">
+          <div class="general">
+            <div class="general-times">
+              <div class="orange_time">
+                <label for="orange_time">Orange Time</label>
+                <input type="range" name="orange_time" id="" />
+              </div>
+              <div class="gap_time">
+                <label for="gap_time">Gap Time</label>
+                <input type="range" name="gap_time" id="" />
+              </div>
             </div>
-            <div class="gap_time">
-              <label for="gap_time">Gap Time</label>
-              <input type="range" name="gap_time" id="" />
+            <div class="general-settings">
+              <div class="mode">
+                <p>M</p>
+                <label class="switch">
+                  <input type="checkbox" />
+                  <span class="slider round"></span>
+                </label>
+                <p>D</p>
+              </div>
+              <div class="period">
+                <div class="period-time">
+                  <label for="period_time"
+                    >Choose the period time (between 40 and 180 sec)</label
+                  >
+                  <input
+                    type="number"
+                    min="40"
+                    max="180"
+                    name="period_time"
+                    id=""
+                  />
+                </div>
+                <div class="period-time">
+                  <label for="ptl_time">Choose the ptl:</label>
+                  <input type="number" name="ptl_time" min="1" />
+                </div>
+              </div>
             </div>
           </div>
-          <div class="general-settings">
-            <div class="mode">
-              <p>M</p>
-              <label class="switch">
-                <input type="checkbox" />
-                <span class="slider round"></span>
-              </label>
-              <p>D</p>
+          <div class="pososta">
+            <div class="pososto_fanari">
+              <span id="pososto_fanari1"></span>
+              <input
+                type="range"
+                name="pososto_fanari1"
+                id="slider_fanari1"
+                min="0"
+                max="100"
+                step="5"
+                value="50"
+                list="percentages"
+              />
+              <datalist id="percentages">
+                <option value="0">0</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+                <option value="60">60</option>
+                <option value="65">65</option>
+                <option value="70">70</option>
+                <option value="75">75</option>
+                <option value="80">80</option>
+                <option value="85">85</option>
+                <option value="90">90</option>
+                <option value="95">95</option>
+                <option value="100">100</option>
+              </datalist>
+              <span class="output" id="percentage_fanari1"></span>
             </div>
-            <div class="period">
-              <input type="number" name="" id="" />
-              <input type="number" />
-            </div>
-          </div>
-        </div>
-        <div class="pososta">
-          <div class="pososto_fanari">
-            <span id="pososto_fanari1"></span>
-            <input
-              type="range"
-              name="pososto_fanari1"
-              id="slider_fanari1"
-              min="0"
-              max="100"
-              step="5"
-              value="50"
-              list="percentages"
-            />
-            <datalist id="percentages">
-              <option value="0">0</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-              <option value="30">30</option>
-              <option value="35">35</option>
-              <option value="40">40</option>
-              <option value="45">45</option>
-              <option value="50">50</option>
-              <option value="55">55</option>
-              <option value="60">60</option>
-              <option value="65">65</option>
-              <option value="70">70</option>
-              <option value="75">75</option>
-              <option value="80">80</option>
-              <option value="85">85</option>
-              <option value="90">90</option>
-              <option value="95">95</option>
-              <option value="100">100</option>
-            </datalist>
-            <span class="output" id="percentage_fanari1"></span>
-          </div>
-          <div class="pososto_fanari">
-            <span id="pososto_fanari2"></span>
-            <input
-              type="range"
-              name="pososto_fanari2"
-              id="slider_fanari2"
-              list="percentages"
-            />
+            <div class="pososto_fanari">
+              <span id="pososto_fanari2"></span>
+              <input
+                type="range"
+                name="pososto_fanari2"
+                id="slider_fanari2"
+                list="percentages"
+              />
 
-            <span class="output" id="percentage_fanari2"></span>
-          </div>
-          <div class="pososto_fanari">
-            <span id="pososto_fanari3"></span>
-            <input
-              type="range"
-              name="pososto_fanari3"
-              id="slider_fanari3"
-              list="percentages"
-            />
-            <span class="output" id="percentage_fanari3"></span>
-          </div>
-          <div class="pososto_fanari">
-            <span id="pososto_fanari4"></span>
-            <input
-              type="range"
-              name="pososto_fanari4"
-              id="slider_fanari4"
-              list="percentages"
-            />
-            <span class="output" id="percentage_fanari4"></span>
+              <span class="output" id="percentage_fanari2"></span>
+            </div>
+            <div class="pososto_fanari">
+              <span id="pososto_fanari3"></span>
+              <input
+                type="range"
+                name="pososto_fanari3"
+                id="slider_fanari3"
+                list="percentages"
+              />
+              <span class="output" id="percentage_fanari3"></span>
+            </div>
+            <div class="pososto_fanari">
+              <span id="pososto_fanari4"></span>
+              <input
+                type="range"
+                name="pososto_fanari4"
+                id="slider_fanari4"
+                list="percentages"
+              />
+              <span class="output" id="percentage_fanari4"></span>
+            </div>
           </div>
         </div>
       </div>
+      <button type="button" class="submit btn btn-success">Submit</button>
     </div>
 
     <script src="admin.mjs" type="module"></script>
