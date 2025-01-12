@@ -16,9 +16,12 @@ html {
 
 .upper-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     width: 100%;
-    height: 50%;
+    height: 40%;
+    margin-top: 93px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 /* ----------------- Map ---------------------- */
@@ -30,30 +33,55 @@ html {
 }
 
 .map-container {
-    width: 40%;
-    height: 50vh;
-    margin-top: 106px;
-    margin-left: 3%;
-    margin-right: 3%;
+
+    height: 100%;
+    /* margin-top: 20px; */
+    /* margin-left: 3%;
+    margin-right: 3%; */
     border: 1px solid black;
-    flex: 2;
+    flex: 1.5;
+    min-width: 50%;
 }
 
+/* ----------------- Go Back Button ---------------------- */
+.goback-btn {
+    position: absolute;
+    top: 120px;
+    left: 100px;
+    background: none;
+    color: black;
+    border: solid 2px black;
+    border-radius: 50%;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 0.3%;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+    display: none;
+}
 
 /* ----------------- fanaria ---------------------- */
 
 .tl-container {
+    height: 100%;
     display: flex;
     justify-content: space-around;
+    align-items: end;
     width: 100%;
-    margin-top: 20px;
-    border: 1px solid black;
+    border: 3px solid green;
     flex: 1;
 }
 
 .traffic-light {
     transform: scale(0.3);
-    border: 1px solid black;
+    border: 3px solid yellow;
+    height: 500px;
 }
 
 .fanaraki {
@@ -91,4 +119,28 @@ html {
     position: relative;
     left: 30px;
     margin-bottom: 10%;
+}
+
+.lower-container {
+    width: 100%;
+    height: 40%;
+    margin-top: 30px;
+    border: 1px solid black;
+
+}
+
+/* ---------------- Control Panel ------------------- */
+
+.pososta {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    height: 50%;
+    width: 50%;
+    border: 1px solid black;
+    flex: 1;
+}
+
+.pososta input {
+    transform: rotate(270deg);
 }

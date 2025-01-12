@@ -4,6 +4,8 @@ var lastClickedMarker = null;
 var trafficLightMarkers = [];
 let trafficLights = [];
 let lastclickedtrafficlight = {};
+var markers = [];
+const goBackButton = document.getElementById("goBack");
 
 //ICONS
 
@@ -23,18 +25,17 @@ var trafficLightIcon = L.icon({
     shadowSize: [25, 25],
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const map = L.map('map').setView([38.292488, 21.789119], 14); // Coordinates for Patras, Greece
+//MAP
+const map = L.map("map").setView([38.292488, 21.789119], 14); // Coordinates for Patras, Greece
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+}).addTo(map);
 
-    fetchJunctions(map);
-    fetchTrafficLights(lastClickedMarker)
-});
+fetchJunctions(map);
 
-async function fetchJunctions(map) {
+async function fetchJunctions() {
     try {
         const response = await fetch("/api/junctions");
         const data = await response.json();
@@ -46,7 +47,7 @@ async function fetchJunctions(map) {
             })
                 .addTo(map)
                 .bindPopup(location.title)
-                .on("click", function () {
+                .on("click", async function () {
                     if (lastClickedMarker) {
                         lastClickedMarker.setIcon(defaultIcon);
                         trafficLightMarkers.forEach(function (tlMarker) {
@@ -59,40 +60,72 @@ async function fetchJunctions(map) {
                     map.flyTo([location.lat, location.lng], 18);
                     currentJunctionId = location.id;
                     console.log("Current Junction ID:", currentJunctionId);
-                    //subscribeToTopic(`v3_fanaria/${currentJunctionId}`);
+
+                    try {
+                        const tlData = await fetchTrafficLights(location.id);
+                        trafficLights = tlData.trafficLights;
+                        trafficLights.forEach(function (tl) {
+                            var tlMarker = L.marker([tl.lat, tl.lng], {
+                                icon: trafficLightIcon,
+                            })
+                                .addTo(map)
+                                .bindTooltip(tl.title)
+                                .on("click", function () {
+                                    lastclickedtrafficlight = {
+                                        junction: location.id,
+                                        trafficLight: tl.id,
+                                    };
+
+                                    currentTrafficLightId = tl.id;
+                                    console.log(
+                                        "Current Traffic Light ID:",
+                                        currentTrafficLightId
+                                    );
+                                });
+
+                            trafficLightMarkers.push(tlMarker);
+                        });
+                    } catch (error) {
+                        console.error("Error fetching traffic lights: ", error);
+                    }
+
+                    map.removeLayer(marker);
+                    goBackButton.classList.remove("hidden");
                 });
+            markers.push(marker);
         });
     } catch (error) {
-        console.error("Error fetching junctions:", error);
+        console.error("Error fetching junctions: ", error);
     }
 }
 
-async function fetchTrafficLights(location) {
+async function fetchTrafficLights(locationId) {
     try {
-        const response = await fetch(`/api/traffic-lights/${location}`);
+        const response = await fetch(`/api/traffic-lights/${locationId}`);
         const tlData = await response.json();
-        trafficLights = tlData.trafficLights;
-
-        trafficLights.forEach(function (tl) {
-            var tlMarker = L.marker([tl.lat, tl.lng], {
-                icon: trafficLightIcon,
-            })
-                .addTo(map)
-                .bindPopup(` ${tl.title}`)
-                .on("click", function () {
-                    lastclickedtrafficlight = {
-                        junction: location.id,
-                        trafficLight: tl.id,
-                    };
-
-                    currentTrafficLightId = tl.id;
-                    console.log("Current Traffic Light ID:", currentTrafficLightId);
-                });
-
-            trafficLightMarkers.push(tlMarker);
-        });
-
+        return tlData;
     } catch (error) {
         console.error("Error fetching traffic lights: ", error);
+        throw error;
     }
 }
+
+goBackButton.addEventListener("click", function () {
+    map.flyTo([38.292488, 21.789119], 14);
+
+    markers.forEach(function (marker) {
+        marker.addTo(map);
+    });
+
+    trafficLightMarkers.forEach(function (tlMarker) {
+        map.removeLayer(tlMarker);
+    });
+    trafficLightMarkers = [];
+
+    if (lastClickedMarker) {
+        lastClickedMarker.setIcon(defaultIcon);
+    }
+    lastClickedMarker = null;
+
+    goBackButton.classList.add("hidden");
+});
