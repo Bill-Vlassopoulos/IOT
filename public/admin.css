@@ -1,305 +1,307 @@
 /* General Reset */
 body,
 html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
 }
 
 .navbar {
-    border-bottom: 1px solid white;
-    width: 100%;
-    background-color: black;
+  border-bottom: 1px solid white;
+  width: 100%;
+  background-color: black;
 }
 
 .upper-container {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    height: 40%;
-    margin-top: 93px;
-    gap: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 40%;
+  margin-top: 93px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 /* ----------------- Map ---------------------- */
 
 #map {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .map-container {
-    height: 100%;
-    /* margin-top: 20px; */
-    /* margin-left: 3%;
+  height: 100%;
+  /* margin-top: 20px; */
+  /* margin-left: 3%;
     margin-right: 3%; */
-    border: 1px solid black;
-    flex: 1.5;
-    min-width: 50%;
+  border: 1px solid black;
+  flex: 1.5;
+  min-width: 50%;
 }
 
 /* ----------------- Go Back Button ---------------------- */
 .goback-btn {
-    position: absolute;
-    top: 120px;
-    left: 100px;
-    background: none;
-    color: black;
-    border: solid 2px black;
-    border-radius: 50%;
-    padding-left: 1%;
-    padding-right: 1%;
-    padding-bottom: 0.3%;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 120px;
+  left: 100px;
+  background: none;
+  color: black;
+  border: solid 2px black;
+  border-radius: 50%;
+  padding-left: 1%;
+  padding-right: 1%;
+  padding-bottom: 0.3%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 /* ----------------- fanaria ---------------------- */
 
 .tl-container {
-    height: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    border: 3px solid green;
-    flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  border: 3px solid green;
+  flex: 1;
 }
 
 .traffic-light {
-    transform: scale(0.3);
-    border: 3px solid yellow;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+  transform: scale(0.3);
+  border: 3px solid yellow;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .fanaraki {
-    height: 342px;
-    width: 142px;
-    background-color: black;
-    margin: 0 auto;
+  height: 342px;
+  width: 142px;
+  background-color: black;
+  margin: 0 auto;
 }
 
 .imikiklio-panw {
-    width: 142px;
-    height: 142px;
-    background-color: black;
-    border-radius: 100%;
-    position: relative;
-    top: calc(142px / 2);
-    margin: 0 auto;
+  width: 142px;
+  height: 142px;
+  background-color: black;
+  border-radius: 100%;
+  position: relative;
+  top: calc(142px / 2);
+  margin: 0 auto;
 }
 
 .imikiklio-katw {
-    width: 142px;
-    height: 142px;
-    background-color: black;
-    border-radius: 100%;
-    position: relative;
-    bottom: calc(142px / 2);
-    margin: 0 auto;
+  width: 142px;
+  height: 142px;
+  background-color: black;
+  border-radius: 100%;
+  position: relative;
+  bottom: calc(142px / 2);
+  margin: 0 auto;
 }
 
 .xrwma {
-    background-color: gray;
-    width: 80px;
-    height: 80px;
-    border-radius: 100%;
-    position: relative;
-    left: 30px;
-    margin-bottom: 10%;
+  background-color: gray;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  position: relative;
+  left: 30px;
+  margin-bottom: 10%;
 }
 
 .lower-container {
-    width: 100%;
-    height: 45%;
-    margin-top: 30px;
-    border: 1px solid black;
+  width: 100%;
+  height: 45%;
+  margin-top: 30px;
+  border: 1px solid black;
 }
 
 .traffic-light-name {
-    font-size: 2.4em;
-    font-weight: 800;
-    text-align: center;
-    font-style: italic;
+  font-size: 2.4em;
+  font-weight: 800;
+  text-align: center;
+  font-style: italic;
 }
 
 /* ---------------- Control Panel ------------------- */
 .control-panel {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    width: 50%;
-    border: 1px solid black;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  width: 50%;
+  border: 1px solid black;
 }
 
 .general {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: column-reverse;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column-reverse;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  flex: 1;
 }
 
 .general-settings {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: flex-start;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  flex: 1;
 }
 
 .general-times {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  flex: 1;
 }
 
-
 .pososta {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  flex: 1;
 }
 
 .pososta input {
-    /* -webkit-appearance: none; */
-    writing-mode: vertical-rl;
-    transform: scale(1.3) rotate(180deg);
-    accent-color: green;
+  /* -webkit-appearance: none; */
+  writing-mode: vertical-rl;
+  transform: scale(1.3) rotate(180deg);
+  accent-color: green;
 }
 
 .orange_time input {
-    /* -webkit-appearance: none; */
+  /* -webkit-appearance: none; */
 
-    accent-color: orange;
-    transform: scale(1.3);
-    margin-top: 1%;
+  accent-color: orange;
+  transform: scale(1.3);
+  margin-top: 1%;
 }
 
 .gap_time input {
-    /* -webkit-appearance: none; */
-    accent-color: red;
-    transform: scale(1.3);
-    margin-top: 1%;
+  /* -webkit-appearance: none; */
+  accent-color: red;
+  transform: scale(1.3);
+  margin-top: 1%;
 }
 
 .orange_time,
 .gap_time {
-    margin-left: 4%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
+  margin-left: 4%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .pososto_fanari {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
 .pososto_fanari span {
-    margin-bottom: 3%;
+  margin-bottom: 20%;
 }
 
 .pososto_fanari:first-child {
-    margin-left: 4%;
+  margin-left: 4%;
 }
 
-
+.pososto_fanari .output {
+  margin-top: 20%;
+}
 
 /* ---------------------- switch --------------------------- */
 
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
 }
 
 /* Hide default HTML checkbox */
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 /* The slider */
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
-input:checked+.slider {
-    background-color: #2196F3;
+input:checked + .slider {
+  background-color: #2196f3;
 }
 
-input:focus+.slider {
-    box-shadow: 0 0 1px #2196F3;
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
 }
 
-input:checked+.slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
 }
 
 /* Rounded sliders */
 .slider.round {
-    border-radius: 34px;
+  border-radius: 34px;
 }
 
 .slider.round:before {
-    border-radius: 50%;
+  border-radius: 50%;
 }

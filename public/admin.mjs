@@ -12,10 +12,29 @@ let title_fanari_2 = document.getElementById("fanari_2");
 let title_fanari_3 = document.getElementById("fanari_3");
 let title_fanari_4 = document.getElementById("fanari_4");
 
-let pososto_fanari_1 = document.getElementById("pososto_fanari1");
-let pososto_fanari_2 = document.getElementById("pososto_fanari2");
-let pososto_fanari_3 = document.getElementById("pososto_fanari3");
-let pososto_fanari_4 = document.getElementById("pososto_fanari4");
+let title_pososto_fanari_1 = document.getElementById("pososto_fanari1");
+let title_pososto_fanari_2 = document.getElementById("pososto_fanari2");
+let title_pososto_fanari_3 = document.getElementById("pososto_fanari3");
+let title_pososto_fanari_4 = document.getElementById("pososto_fanari4");
+
+const sliders = [
+  {
+    slider: document.getElementById("slider_fanari1"),
+    output: document.getElementById("percentage_fanari1"),
+  },
+  {
+    slider: document.getElementById("slider_fanari2"),
+    output: document.getElementById("percentage_fanari2"),
+  },
+  {
+    slider: document.getElementById("slider_fanari3"),
+    output: document.getElementById("percentage_fanari3"),
+  },
+  {
+    slider: document.getElementById("slider_fanari4"),
+    output: document.getElementById("percentage_fanari4"),
+  },
+];
 
 //ICONS
 
@@ -80,10 +99,14 @@ async function fetchJunctions() {
             title_fanari_3.innerHTML = trafficLights[2].title;
             title_fanari_4.innerHTML = trafficLights[3].title;
 
-            pososto_fanari_1.innerHTML = trafficLights[0].title;
-            pososto_fanari_2.innerHTML = trafficLights[1].title;
-            pososto_fanari_3.innerHTML = trafficLights[2].title;
-            pososto_fanari_4.innerHTML = trafficLights[3].title;
+            title_pososto_fanari_1.innerHTML = trafficLights[0].title;
+            title_pososto_fanari_2.innerHTML = trafficLights[1].title;
+            title_pososto_fanari_3.innerHTML = trafficLights[2].title;
+            title_pososto_fanari_4.innerHTML = trafficLights[3].title;
+
+            sliders.forEach(({ slider, output }) => {
+              output.textContent = `${slider.value}%`;
+            });
 
             trafficLights.forEach(function (tl) {
               var tlMarker = L.marker([tl.lat, tl.lng], {
@@ -131,6 +154,14 @@ async function fetchTrafficLights(locationId) {
   }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  sliders.forEach(({ slider, output }) => {
+    slider.addEventListener("input", function () {
+      output.textContent = `${slider.value}%`;
+    });
+  });
+});
+
 goBackButton.addEventListener("click", function () {
   map.flyTo([38.292488, 21.789119], 13);
 
@@ -153,10 +184,14 @@ goBackButton.addEventListener("click", function () {
   title_fanari_3.innerHTML = null;
   title_fanari_4.innerHTML = null;
 
-  pososto_fanari_1.innerHTML = null;
-  pososto_fanari_2.innerHTML = null;
-  pososto_fanari_3.innerHTML = null;
-  pososto_fanari_4.innerHTML = null;
+  title_pososto_fanari_1.innerHTML = null;
+  title_pososto_fanari_2.innerHTML = null;
+  title_pososto_fanari_3.innerHTML = null;
+  title_pososto_fanari_4.innerHTML = null;
+
+  sliders.forEach(({ output }) => {
+    output.textContent = "";
+  });
 
   goBackButton.classList.add("hidden");
 });
