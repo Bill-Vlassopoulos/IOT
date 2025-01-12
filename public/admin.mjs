@@ -7,6 +7,11 @@ let lastclickedtrafficlight = {};
 var markers = [];
 const goBackButton = document.getElementById("goBack");
 
+let title_fanari_1 = document.getElementById("fanari_1");
+let title_fanari_2 = document.getElementById("fanari_2");
+let title_fanari_3 = document.getElementById("fanari_3");
+let title_fanari_4 = document.getElementById("fanari_4");
+
 //ICONS
 
 var defaultIcon = L.icon({
@@ -26,7 +31,7 @@ var trafficLightIcon = L.icon({
 });
 
 //MAP
-const map = L.map("map").setView([38.292488, 21.789119], 14); // Coordinates for Patras, Greece
+const map = L.map("map").setView([38.292488, 21.789119], 13); // Coordinates for Patras, Greece
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
@@ -64,6 +69,12 @@ async function fetchJunctions() {
                     try {
                         const tlData = await fetchTrafficLights(location.id);
                         trafficLights = tlData.trafficLights;
+
+                        title_fanari_1.innerHTML = trafficLights[0].title;
+                        title_fanari_2.innerHTML = trafficLights[1].title;
+                        title_fanari_3.innerHTML = trafficLights[2].title;
+                        title_fanari_4.innerHTML = trafficLights[3].title;
+
                         trafficLights.forEach(function (tl) {
                             var tlMarker = L.marker([tl.lat, tl.lng], {
                                 icon: trafficLightIcon,
@@ -111,7 +122,7 @@ async function fetchTrafficLights(locationId) {
 }
 
 goBackButton.addEventListener("click", function () {
-    map.flyTo([38.292488, 21.789119], 14);
+    map.flyTo([38.292488, 21.789119], 13);
 
     markers.forEach(function (marker) {
         marker.addTo(map);
@@ -126,6 +137,11 @@ goBackButton.addEventListener("click", function () {
         lastClickedMarker.setIcon(defaultIcon);
     }
     lastClickedMarker = null;
+
+    title_fanari_1.innerHTML = null;
+    title_fanari_2.innerHTML = null;
+    title_fanari_3.innerHTML = null;
+    title_fanari_4.innerHTML = null;
 
     goBackButton.classList.add("hidden");
 });
