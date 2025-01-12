@@ -1,195 +1,210 @@
 /* General Reset */
 body,
 html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .navbar {
-    border-bottom: 1px solid white;
-    width: 100%;
-    background-color: black;
+  border-bottom: 1px solid white;
+  width: 100%;
+  background-color: black;
 }
 
-
 .upper-container {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    height: 40%;
-    margin-top: 93px;
-    gap: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 40%;
+  margin-top: 93px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 /* ----------------- Map ---------------------- */
 
 #map {
-    width: 100%;
-    height: 100%;
-
+  width: 100%;
+  height: 100%;
 }
 
 .map-container {
-
-    height: 100%;
-    /* margin-top: 20px; */
-    /* margin-left: 3%;
+  height: 100%;
+  /* margin-top: 20px; */
+  /* margin-left: 3%;
     margin-right: 3%; */
-    border: 1px solid black;
-    flex: 1.5;
-    min-width: 50%;
+  border: 1px solid black;
+  flex: 1.5;
+  min-width: 50%;
 }
 
 /* ----------------- Go Back Button ---------------------- */
 .goback-btn {
-    position: absolute;
-    top: 120px;
-    left: 100px;
-    background: none;
-    color: black;
-    border: solid 2px black;
-    border-radius: 50%;
-    padding-left: 1%;
-    padding-right: 1%;
-    padding-bottom: 0.3%;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 120px;
+  left: 100px;
+  background: none;
+  color: black;
+  border: solid 2px black;
+  border-radius: 50%;
+  padding-left: 1%;
+  padding-right: 1%;
+  padding-bottom: 0.3%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 /* ----------------- fanaria ---------------------- */
 
 .tl-container {
-    height: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    border: 3px solid green;
-    flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  border: 3px solid green;
+  flex: 1;
 }
 
 .traffic-light {
-    transform: scale(0.3);
-    border: 3px solid yellow;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+  transform: scale(0.3);
+  border: 3px solid yellow;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .fanaraki {
-    height: 342px;
-    width: 142px;
-    background-color: black;
-    margin: 0 auto;
+  height: 342px;
+  width: 142px;
+  background-color: black;
+  margin: 0 auto;
 }
 
 .imikiklio-panw {
-    width: 142px;
-    height: 142px;
-    background-color: black;
-    border-radius: 100%;
-    position: relative;
-    top: calc(142px / 2);
-    margin: 0 auto;
+  width: 142px;
+  height: 142px;
+  background-color: black;
+  border-radius: 100%;
+  position: relative;
+  top: calc(142px / 2);
+  margin: 0 auto;
 }
 
 .imikiklio-katw {
-    width: 142px;
-    height: 142px;
-    background-color: black;
-    border-radius: 100%;
-    position: relative;
-    bottom: calc(142px / 2);
-    margin: 0 auto;
+  width: 142px;
+  height: 142px;
+  background-color: black;
+  border-radius: 100%;
+  position: relative;
+  bottom: calc(142px / 2);
+  margin: 0 auto;
 }
 
 .xrwma {
-    background-color: gray;
-    width: 80px;
-    height: 80px;
-    border-radius: 100%;
-    position: relative;
-    left: 30px;
-    margin-bottom: 10%;
+  background-color: gray;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  position: relative;
+  left: 30px;
+  margin-bottom: 10%;
 }
 
 .lower-container {
-    width: 100%;
-    height: 45%;
-    margin-top: 30px;
-    border: 1px solid black;
-
+  width: 100%;
+  height: 45%;
+  margin-top: 30px;
+  border: 1px solid black;
 }
 
 .traffic-light-name {
-    font-size: 2.4em;
-    font-weight: 800;
-    text-align: center;
-    font-style: italic;
+  font-size: 2.4em;
+  font-weight: 800;
+  text-align: center;
+  font-style: italic;
 }
 
 /* ---------------- Control Panel ------------------- */
 .control-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    width: 50%;
-    border: 1px solid black;
-
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  width: 50%;
+  border: 1px solid black;
 }
 
 .general-times {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: flex-start;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  flex: 1;
 }
 
-
 .pososta {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    border: 1px solid black;
-    flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border: 1px solid black;
+  flex: 1;
 }
 
 .pososta input {
-    /* -webkit-appearance: none; */
-    transform: rotate(270deg) scale(1.3);
-    accent-color: green;
+  /* -webkit-appearance: none; */
+  transform: rotate(270deg) scale(1.3);
+  accent-color: green;
 }
 
-.general-times input:nth-of-type(1) {
-    /* -webkit-appearance: none; */
+.orange_time input {
+  /* -webkit-appearance: none; */
 
-    accent-color: orange;
-    transform: scale(1.3);
-    margin-left: 4%;
+  accent-color: orange;
+  transform: scale(1.3);
+  margin-top: 1%;
 }
 
-.general-times input:nth-of-type(2) {
-    /* -webkit-appearance: none; */
-    accent-color: red;
-    transform: scale(1.3);
-    margin-left: 4%;
+.gap_time input {
+  /* -webkit-appearance: none; */
+  accent-color: red;
+  transform: scale(1.3);
+  margin-top: 1%;
+}
+
+.orange_time,
+.gap_time {
+  margin-left: 4%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.pososto_fanari {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.pososto_fanari:first-child {
+  margin-left: 4%;
 }
