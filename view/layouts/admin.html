@@ -16,6 +16,7 @@
       crossorigin="anonymous"
     />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   </head>
 
   <body>
@@ -106,25 +107,59 @@
         </div>
       </div>
     </div>
-    <div class="submit-container">
+    <form class="submit-container" id="form" method="get" action="/admin">
       <div class="lower-container">
         <div class="control-panel">
           <div class="general">
             <div class="general-times">
               <div class="orange_time">
-                <label for="orange_time">Orange Time</label>
-                <input type="range" name="orange_time" id="" />
+                <label for="orange_time">Orange Time (sec)</label>
+                <input
+                  type="range"
+                  name="orange_time"
+                  min="2"
+                  max="5"
+                  step="1"
+                  id="orange_time"
+                  list="general_times"
+                />
+                <datalist id="general_times">
+                  <option value="2">2 sec</option>
+                  <option value="3">3 sec</option>
+                  <option value="4">4 sec</option>
+                  <option value="5">5 sec</option>
+                </datalist>
+                <div class="times">
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
+                  <span>5</span>
+                </div>
               </div>
               <div class="gap_time">
-                <label for="gap_time">Gap Time</label>
-                <input type="range" name="gap_time" id="" />
+                <label for="gap_time">Gap Time (sec)</label>
+                <input
+                  type="range"
+                  min="2"
+                  max="5"
+                  step="1"
+                  name="gap_time"
+                  id="gap_time"
+                  list="general_times"
+                />
+                <div class="times">
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
+                  <span>5</span>
+                </div>
               </div>
             </div>
             <div class="general-settings">
               <div class="mode">
                 <p>M</p>
-                <label class="switch">
-                  <input type="checkbox" />
+                <label for="mode" class="switch">
+                  <input type="checkbox" name="mode" id="mode" />
                   <span class="slider round"></span>
                 </label>
                 <p>D</p>
@@ -139,12 +174,15 @@
                     min="40"
                     max="180"
                     name="period_time"
-                    id=""
+                    id="period_time"
                   />
                 </div>
                 <div class="period-time">
-                  <label for="ptl_time">Choose the ptl:</label>
-                  <input type="number" name="ptl_time" min="1" />
+                  <label for="ptl_time"
+                    >Choose the ptl: (if -1 is chosen then it equals eternal
+                    loop)</label
+                  >
+                  <input type="number" name="ptl_time" min="-1" id="ptl" />
                 </div>
               </div>
             </div>
@@ -156,16 +194,13 @@
                 type="range"
                 name="pososto_fanari1"
                 id="slider_fanari1"
-                min="0"
-                max="100"
+                min="15"
+                max="55"
                 step="5"
                 value="50"
                 list="percentages"
               />
               <datalist id="percentages">
-                <option value="0">0</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="20">20</option>
                 <option value="25">25</option>
@@ -175,15 +210,6 @@
                 <option value="45">45</option>
                 <option value="50">50</option>
                 <option value="55">55</option>
-                <option value="60">60</option>
-                <option value="65">65</option>
-                <option value="70">70</option>
-                <option value="75">75</option>
-                <option value="80">80</option>
-                <option value="85">85</option>
-                <option value="90">90</option>
-                <option value="95">95</option>
-                <option value="100">100</option>
               </datalist>
               <span class="output" id="percentage_fanari1"></span>
             </div>
@@ -193,6 +219,9 @@
                 type="range"
                 name="pososto_fanari2"
                 id="slider_fanari2"
+                min="15"
+                max="55"
+                step="5"
                 list="percentages"
               />
 
@@ -203,6 +232,9 @@
               <input
                 type="range"
                 name="pososto_fanari3"
+                min="15"
+                max="55"
+                step="5"
                 id="slider_fanari3"
                 list="percentages"
               />
@@ -212,6 +244,9 @@
               <span id="pososto_fanari4"></span>
               <input
                 type="range"
+                min="15"
+                max="55"
+                step="5"
                 name="pososto_fanari4"
                 id="slider_fanari4"
                 list="percentages"
@@ -221,8 +256,10 @@
           </div>
         </div>
       </div>
-      <button type="button" class="submit btn btn-success">Submit</button>
-    </div>
+      <button type="submit" id="submit-form" class="submit btn btn-success">
+        Submit
+      </button>
+    </form>
 
     <script src="admin.mjs" type="module"></script>
     <script

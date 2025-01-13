@@ -1,5 +1,12 @@
+//PORT
+const PORT = 3000;
+
 //MQTT
 const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt";
+
+//CONTEXT BROKER
+const headers = { "Content-Type": "application/json" };
+const context_broker_link = "http://150.140.186.118:1026/v2/entities/";
 
 //VARIABLES
 let currentJunctionId = null;
@@ -8,7 +15,15 @@ var trafficLightMarkers = [];
 let trafficLights = [];
 let lastclickedtrafficlight = {};
 var markers = [];
+
 const goBackButton = document.getElementById("goBack");
+const form = document.getElementById("form");
+const mode = document.getElementById("mode");
+const ptl = document.getElementById("ptl");
+const period = document.getElementById("period_time");
+const gap = document.getElementById("gap_time");
+const orange = document.getElementById("orange_time");
+
 let interval1, interval2, interval3, interval4;
 let updateIntervals = [interval1, interval2, interval3, interval4];
 let schedule1, schedule2, schedule3, schedule4;
@@ -195,6 +210,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
 
+reset();
+
 fetchJunctions(map);
 
 //FUNCTIONS
@@ -224,6 +241,11 @@ async function fetchJunctions() {
           map.flyTo([location.lat, location.lng], 18);
           currentJunctionId = location.id;
           console.log("Current Junction ID:", currentJunctionId);
+          mode.checked = location.mode === 0 ? true : false;
+          ptl.value = location.ptl;
+          period.value = location.period;
+          gap.value = location.gap_time;
+          orange.value = location.orange_time;
 
           try {
             const tlData = await fetchTrafficLights(location.id);
@@ -239,15 +261,12 @@ async function fetchJunctions() {
             title_pososto_fanari_3.innerHTML = trafficLights[2].title;
             title_pososto_fanari_4.innerHTML = trafficLights[3].title;
 
-            sliders.forEach(({ slider, output }) => {
-              output.textContent = `${slider.value}%`;
-            });
-
             trafficLights.forEach(function (tl) {
               subscribeToTopic(`v3_fanaria/${tl.id}`);
               console.log("Scheduled:", tl.schedule);
               if (tl.title === "Φανάρι 1") {
                 schedules[0] = tl.schedule;
+                sliders[0].slider.value = location.pososta[0][tl.id];
                 updateTrafficLightColor(
                   schedules[0],
                   fanarakia[0].green_light,
@@ -256,6 +275,7 @@ async function fetchJunctions() {
                 );
               } else if (tl.title === "Φανάρι 2") {
                 schedules[1] = tl.schedule;
+                sliders[1].slider.value = location.pososta[1][tl.id];
                 updateTrafficLightColor(
                   schedules[1],
                   fanarakia[1].green_light,
@@ -264,6 +284,7 @@ async function fetchJunctions() {
                 );
               } else if (tl.title === "Φανάρι 3") {
                 schedules[2] = tl.schedule;
+                sliders[2].slider.value = location.pososta[2][tl.id];
                 updateTrafficLightColor(
                   schedules[2],
                   fanarakia[2].green_light,
@@ -272,6 +293,7 @@ async function fetchJunctions() {
                 );
               } else if (tl.title === "Φανάρι 4") {
                 schedules[3] = tl.schedule;
+                sliders[3].slider.value = location.pososta[3][tl.id];
                 updateTrafficLightColor(
                   schedules[3],
                   fanarakia[3].green_light,
@@ -298,6 +320,10 @@ async function fetchJunctions() {
                 });
 
               trafficLightMarkers.push(tlMarker);
+
+              sliders.forEach(({ slider, output }) => {
+                output.textContent = `${slider.value}%`;
+              });
 
               let index;
               if (tl.title === "Φανάρι 1") {
@@ -372,27 +398,13 @@ goBackButton.addEventListener("click", function () {
   }
   lastClickedMarker = null;
 
-  title_fanari_1.innerHTML = null;
-  title_fanari_2.innerHTML = null;
-  title_fanari_3.innerHTML = null;
-  title_fanari_4.innerHTML = null;
-
-  title_pososto_fanari_1.innerHTML = null;
-  title_pososto_fanari_2.innerHTML = null;
-  title_pososto_fanari_3.innerHTML = null;
-  title_pososto_fanari_4.innerHTML = null;
-
-  sliders.forEach(({ output }) => {
-    output.textContent = "";
-  });
-
   let interval;
 
   for (interval of updateIntervals) {
     clearInterval(interval);
   }
 
-  resetTrafficLightColor();
+  reset();
 
   goBackButton.classList.add("hidden");
 });
@@ -436,10 +448,116 @@ function updateTrafficLightColor(
   }
 }
 
-function resetTrafficLightColor() {
+function reset() {
   fanarakia.forEach((fanari) => {
     fanari.green_light.style.backgroundColor = "gray";
     fanari.orange_light.style.backgroundColor = "gray";
     fanari.red_light.style.backgroundColor = "gray";
   });
+  mode.checked = true;
+  orange.value = 2;
+  gap.value = 2;
+  period.value = "";
+  ptl.value = "";
+
+  sliders.forEach(({ slider, output }) => {
+    slider.value = 35;
+    output.textContent = "";
+  });
+
+  title_fanari_1.innerHTML = null;
+  title_fanari_2.innerHTML = null;
+  title_fanari_3.innerHTML = null;
+  title_fanari_4.innerHTML = null;
+
+  title_pososto_fanari_1.innerHTML = null;
+  title_pososto_fanari_2.innerHTML = null;
+  title_pososto_fanari_3.innerHTML = null;
+  title_pososto_fanari_4.innerHTML = null;
+}
+
+/*SUBMIT FORMS*/
+
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const formData = {
+    orange_time: document.getElementById("orange_time").value,
+    gap_time: document.getElementById("gap_time").value,
+    period_time: document.getElementById("period_time").value,
+    ptl_time: document.getElementById("ptl").value,
+    pososto_fanari1: document.getElementById("slider_fanari1").value,
+    pososto_fanari2: document.getElementById("slider_fanari2").value,
+    pososto_fanari3: document.getElementById("slider_fanari3").value,
+    pososto_fanari4: document.getElementById("slider_fanari4").value,
+    mode: document.getElementById("mode").checked ? "0" : "1", //if it is checked then it is 0 else it is 1
+  };
+
+  localStorage.setItem("formData", JSON.stringify(formData));
+
+  patch_entity();
+
+  //console.log("Form Data:", formData);
+
+  //window.location.href = "/admin";
+});
+
+function getFormData() {
+  const formData = localStorage.getItem("formData");
+  return JSON.parse(formData);
+}
+
+async function patch_entity() {
+  const contextBrokerUrl = context_broker_link + currentJunctionId + "/attrs";
+  const formData = getFormData();
+
+  let gap_time = parseInt(formData.gap_time);
+  let period_time = parseInt(formData.period_time);
+  let ptl_time = parseInt(formData.ptl_time);
+  let orange_time = parseInt(formData.orange_time);
+  let pososto_fanari1 = parseInt(formData.pososto_fanari1);
+  let pososto_fanari2 = parseInt(formData.pososto_fanari2);
+  let pososto_fanari3 = parseInt(formData.pososto_fanari3);
+  let pososto_fanari4 = parseInt(formData.pososto_fanari4);
+  let mode = parseInt(formData.mode);
+
+  const fixedSchedule = [
+    { [`${trafficLights[0].id}`]: pososto_fanari1 },
+    { [`${trafficLights[1].id}`]: pososto_fanari2 },
+    { [`${trafficLights[2].id}`]: pososto_fanari3 },
+    { [`${trafficLights[3].id}`]: pososto_fanari4 },
+  ];
+
+  const data = {
+    period: { type: "StructuredValue", value: { duration: period_time } },
+    mode: { type: "Integer", value: mode },
+    fixed_schedule: {
+      type: "StructuredValue",
+      value: fixedSchedule,
+    },
+    ptl: { type: "Integer", value: ptl_time },
+    gap_duration: {
+      type: "Integer",
+      value: gap_time,
+      metadata: {},
+    },
+    orange_duration: {
+      type: "Integer",
+      value: orange_time,
+      metadata: {},
+    },
+  };
+
+  try {
+    const response = await axios.post(`http://localhost:${PORT}/api/patch`, {
+      contextBrokerUrl,
+      data,
+    });
+
+    console.log("Success!");
+    alert("Form submitted successfully!");
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Failed to submit the form. Please try again.");
+  }
 }

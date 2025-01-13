@@ -9,7 +9,7 @@ import express from "express";
 import axios from "axios";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -84,6 +84,12 @@ app.get("/api/junctions", async (req, res) => {
       lat: junction.location.value.coordinates[0],
       lng: junction.location.value.coordinates[1],
       title: junction.title.value,
+      orange_time: junction.orange_duration.value,
+      gap_time: junction.gap_duration.value,
+      ptl: junction.ptl.value,
+      period: junction.period.value.duration,
+      pososta: junction.fixed_schedule.value,
+      mode: junction.mode.value,
     }));
 
     res.json({ junctions: formattedJunctions });
@@ -180,6 +186,23 @@ app.get(
     // }
   }
 );
+
+//API to take the requests from front end and send them to the context broker
+app.post("/api/patch", async (req, res) => {
+  const { contextBrokerUrl, data } = req.body;
+
+  try {
+    const response = await axios.patch(contextBrokerUrl, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Failed to patch data to context broker" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on: http://localhost:${PORT}`);
