@@ -1,6 +1,7 @@
 const MQTT_BROKER = "ws://150.140.186.118:9001/mqtt"; // WebSocket URL for MQTT
 //let currentTopic = "v3_fanaria/v3_omada14_fanari_14"; // Initial topic to subscribe to
 
+let tlData = [];
 let lastclickedtrafficlight = {};
 let currentJunctionId = null;
 let currentTrafficLightId = null;
@@ -299,12 +300,13 @@ const goBackButton = document.getElementById("goBack");
 openDashboardBtn.addEventListener("click", () => {
   console.log(lastclickedtrafficlight);
   fetchTrafficDataAndUpdateDashboard(currentJunctionId, currentTrafficLightId);
-
+  updateChart();
   dashboard.classList.add("visible");
   mapElement.classList.add("map-blurred");
   openDashboardBtn.classList.add("hidden");
   goBackButton.classList.add("hidden");
 
+  let intervalChart = setInterval(updateChart, 1000);
   updateInterval = setInterval(updateTrafficLightColor, 1000);
 });
 
@@ -315,6 +317,9 @@ closeDashboardBtn.addEventListener("click", () => {
   mapElement.classList.remove("map-blurred");
   openDashboardBtn.classList.remove("hidden");
   goBackButton.classList.remove("hidden");
+
+  tlData = [];
+  updateChart();
 
   clearInterval(updateInterval);
 });
@@ -370,58 +375,81 @@ function fetchTrafficDataAndUpdateDashboard(junctionId, trafficLightId) {
     .catch((error) => {
       console.log("Error fetching data:", error);
     });
+
+
 }
 
 // Function to update the traffic chart with the new waiting cars data
-function updateTrafficChart(waitingCars) {
-  // Assuming trafficData is already defined globally for the chart
-  const currentTime = new Date();
-  const currentHour = currentTime.getHours();
-  const currentMinutes = currentTime.getMinutes();
+// function updateTrafficChart(waitingCars) {
+//   // Assuming trafficData is already defined globally for the chart
+//   const currentTime = new Date();
+//   const currentHour = currentTime.getHours();
+//   const currentMinutes = currentTime.getMinutes();
 
-  // Update the chart's dataset with the new waiting cars value at the current time slot
-  trafficData.datasets[0].data[
-    currentHour * 30 + Math.floor(currentMinutes / 2)
-  ] = waitingCars;
+//   // Update the chart's dataset with the new waiting cars value at the current time slot
+//   trafficData.datasets[0].data[
+//     currentHour * 30 + Math.floor(currentMinutes / 2)
+//   ] = waitingCars;
 
-  // Re-render the chart with the updated data
-  const ctx = document.getElementById("trafficChart").getContext("2d");
-  new Chart(ctx, {
-    type: "line",
-    data: trafficData,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          beginAtZero: true,
-        },
-        y: {
-          beginAtZero: true,
+// Re-render the chart with the updated data
+const ctx = document.getElementById("trafficChart").getContext("2d");
+const trafficChart = new Chart(ctx, {
+  type: "line", // Change to 'line' for a line chart
+  data: {
+    labels: [], // Example labels
+    datasets: [
+      {
+        label: "Κίνηση", // Label for the first line
+        data: [], // Example data for the first line
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        fill: false,
+      },
+
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Time', // Label for the x-axis
         },
       },
-      plugins: {
+      y: {
+        title: {
+          display: true,
+          text: 'Cars', // Label for the y-axis
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Congestion over the last 24 hours', // Title of the chart
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'xy', // Allow panning in both directions
+        },
         zoom: {
-          pan: {
-            enabled: true, // Enable panning
-            mode: "xy", // Allow horizontal panning only
+          wheel: {
+            enabled: true, // Enable zooming with the mouse wheel
           },
-          zoom: {
-            wheel: {
-              enabled: true, // Enable zooming with mouse wheel
-              mode: "x", // Zoom horizontally
-            },
-            pinch: {
-              enabled: true, // Enable zooming with pinch gestures
-              mode: "x", // Zoom horizontally
-            },
-            mode: "x", // Overall zoom mode
+          pinch: {
+            enabled: true, // Enable zooming with pinch gestures
           },
+          mode: 'xy', // Allow zooming in both directions
         },
       },
     },
-  });
-}
+  },
+});
+
 const red_light = document.querySelector(".fanaraki #red_light");
 const orange_light = document.querySelector(".fanaraki #orange_light");
 const green_light = document.querySelector(".fanaraki #green_light");
@@ -454,3 +482,51 @@ function updateTrafficLightColor() {
     red_light.style.backgroundColor = "red";
   }
 }
+
+async function fetchTrafficLightData(id) {
+  try {
+    const response = await fetch(`/api/traffic-info/${id}`);
+    const tlData = await response.json();
+    return tlData;
+  } catch (error) {
+    console.error("Error fetching traffic lights: ", error);
+    throw error;
+  }
+}
+
+function formatTime(recvTime) {
+  const date = new Date(recvTime);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+async function updateChart() {
+  tlData = await fetchTrafficLightData(currentTrafficLightId);
+  console.log(tlData);
+  const labels = tlData.data.map(item => formatTime(item.recvTime));
+  trafficChart.data.labels = labels;
+  trafficChart.data.datasets[0].data = tlData.data.map(item => item.attrValue);
+  trafficChart.update();
+}
+
+// function updateChartData() {
+//   if (trafficLightData.length > 0) {
+//     trafficLightData.sort((a, b) => a.id.localeCompare(b.id))
+//     console.log(trafficLightData);
+
+//     const labels = trafficLightData[0].data.map(item => formatTime(item.recvTime));
+//     myChart.data.labels = labels;
+//     // Assuming trafficLightData is an array of objects with properties for each dataset
+//     myChart.data.datasets[0].data = trafficLightData[0].data.map(item => item.attrValue);
+//     myChart.data.datasets[1].data = trafficLightData[1].data.map(item => item.attrValue);
+//     myChart.data.datasets[2].data = trafficLightData[2].data.map(item => item.attrValue);
+//     myChart.data.datasets[3].data = trafficLightData[3].data.map(item => item.attrValue);
+//     myChart.update();
+//   }
+//   else {
+//     myChart.data.datasets[0].data = [];
+//     myChart.data.datasets[1].data = [];
+//     myChart.data.datasets[2].data = [];
+//     myChart.data.datasets[3].data = [];
+//     myChart.update();
+//   }
+// }

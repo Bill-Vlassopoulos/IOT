@@ -220,7 +220,7 @@ const ctx = document.getElementById("myChart").getContext("2d");
 const myChart = new Chart(ctx, {
   type: "line", // Change to 'line' for a line chart
   data: {
-    labels: ["January", "February", "March", "April", "May", "June", "July"], // Example labels
+    labels: [], // Example labels
     datasets: [
       {
         label: "Φανάρι 1",
@@ -256,23 +256,70 @@ const myChart = new Chart(ctx, {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Time', // Label for the x-axis
+        },
+      },
       y: {
+        title: {
+          display: true,
+          text: 'Cars', // Label for the y-axis
+        },
         beginAtZero: true,
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Congestion over the last 24 hours', // Title of the chart
+      },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'xy', // Allow panning in both directions
+        },
+        zoom: {
+          wheel: {
+            enabled: true, // Enable zooming with the mouse wheel
+          },
+          pinch: {
+            enabled: true, // Enable zooming with pinch gestures
+          },
+          mode: 'xy', // Allow zooming in both directions
+        },
       },
     },
   },
 });
 
 //FUNCTIONS
-// jsonList.sort((a, b) => a.id.localeCompare(b.id));
+
+function formatTime(recvTime) {
+  const date = new Date(recvTime);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 function updateChartData() {
   if (trafficLightData.length > 0) {
     trafficLightData.sort((a, b) => a.id.localeCompare(b.id))
+    console.log(trafficLightData);
+
+    const labels = trafficLightData[0].data.map(item => formatTime(item.recvTime));
+    myChart.data.labels = labels;
     // Assuming trafficLightData is an array of objects with properties for each dataset
-    myChart.data.datasets[0].data = trafficLightData[0].data;
-    myChart.data.datasets[1].data = trafficLightData[1].data;
-    myChart.data.datasets[2].data = trafficLightData[2].data;
-    myChart.data.datasets[3].data = trafficLightData[3].data;
+    myChart.data.datasets[0].data = trafficLightData[0].data.map(item => item.attrValue);
+    myChart.data.datasets[1].data = trafficLightData[1].data.map(item => item.attrValue);
+    myChart.data.datasets[2].data = trafficLightData[2].data.map(item => item.attrValue);
+    myChart.data.datasets[3].data = trafficLightData[3].data.map(item => item.attrValue);
+    myChart.update();
+  }
+  else {
+    myChart.data.datasets[0].data = [];
+    myChart.data.datasets[1].data = [];
+    myChart.data.datasets[2].data = [];
+    myChart.data.datasets[3].data = [];
     myChart.update();
   }
 }
@@ -421,6 +468,7 @@ async function fetchJunctions() {
               }
 
             });
+            let interval = setInterval(updateChartData, 1000);
           } catch (error) {
             console.error("Error fetching traffic lights: ", error);
           }
@@ -439,7 +487,6 @@ async function fetchTrafficLights(locationId) {
   try {
     const response = await fetch(`/api/traffic-lights/${locationId}`);
     const tlData = await response.json();
-    updateChartData();
     return tlData;
   } catch (error) {
     console.error("Error fetching traffic lights: ", error);
@@ -491,6 +538,8 @@ goBackButton.addEventListener("click", function () {
   }
 
   reset();
+
+  updateChartData();
 
   goBackButton.classList.add("hidden");
 });
@@ -560,6 +609,11 @@ function reset() {
   title_pososto_fanari_2.innerHTML = null;
   title_pososto_fanari_3.innerHTML = null;
   title_pososto_fanari_4.innerHTML = null;
+
+  trafficLightData = [];
+  console.log("Traffic Light Data:", trafficLightData);
+
+
 }
 
 /*SUBMIT FORMS*/
