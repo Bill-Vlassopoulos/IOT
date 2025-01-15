@@ -8,16 +8,27 @@ const dbConfig = {
     database: 'default'
 };
 
-let connection;
-
-async function connectToDatabase() {
-    if (!connection || connection.connection._closing) {
-        connection = await mysql.createConnection(dbConfig);
+async function testFetchData(tableName, attrName, startDatetime, endDatetime) {
+    try {
+        const results = await fetchData(
+            tableName,
+            attrName,
+            startDatetime,
+            endDatetime
+        );
+        console.log(results);
+    } catch (error) {
+        console.error('Error fetching data:', error);
     }
 }
 
-export async function fetchData(tableName, attrName, startDatetime = null, endDatetime = null) {
-    await connectToDatabase();
+testFetchData('v3_omada14_fanari_0_TrafficLight',
+    'waitingCars',
+    '2025-01-08 23:57:00',
+    '2025-01-14 00:03:00');
+
+async function fetchData(tableName, attrName, startDatetime = null, endDatetime = null) {
+    const connection = await mysql.createConnection(dbConfig);
 
     try {
         let query = `
@@ -41,24 +52,7 @@ export async function fetchData(tableName, attrName, startDatetime = null, endDa
         return results;
     } catch (err) {
         throw new Error('Error fetching data: ' + err.message);
-    }
-}
-
-// Example usage
-async function testFetchData() {
-    try {
-        const results = await fetchData(
-            'v3_omada14_fanari_0_TrafficLight',
-            'waitingCars',
-            '2025-01-08 23:57:00',
-            '2025-01-14 00:03:00'
-        );
-        console.log(results);
-    } catch (error) {
-        console.error('Error fetching data:', error);
     } finally {
-        if (connection) {
-            await connection.end();
-        }
+        await connection.end();
     }
 }

@@ -1,18 +1,43 @@
 import taskListSession from "./app-setup/app-setup-session.mjs";
 import * as logInController from "./controller/login-controller.mjs";
-import { getalljunctions, gettrafficlights } from "./model/queries.mjs";
-import { getlasttrafficInfo } from "./model/queries.mjs";
+//import { getalljunctions, gettrafficlights } from "./model/queries.mjs";
+//import { getlasttrafficInfo } from "./model/queries.mjs";
+
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
 import express from "express";
 import axios from "axios";
-
+import { fetchData } from './model/queries.mjs';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+function getLast24HoursFormatted() {
+  const now = new Date();
+  const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const year = last24Hours.getFullYear();
+  const month = String(last24Hours.getMonth() + 1).padStart(2, '0');
+  const day = String(last24Hours.getDate()).padStart(2, '0');
+  const hours = String(last24Hours.getHours()).padStart(2, '0');
+  const minutes = String(last24Hours.getMinutes()).padStart(2, '0');
+  const seconds = String(last24Hours.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+function formatDateTime() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
 app.use(express.static("public"));
 app.use(express.json()); // Add this
@@ -113,7 +138,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
       const trafficLight = await axios.get(
         "http://150.140.186.118:1026/v2/entities?id=" +
-          cb_data_junction.fanaria.value[i]
+        cb_data_junction.fanaria.value[i]
       );
       let cb_data_trafficlight = JSON.stringify(trafficLight.data);
       cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
@@ -177,16 +202,26 @@ app.get(
       success: true,
       data: trafficInfo,
     });
-    // console.log("Traffic Info:", trafficInfo);
-    // } else {
-    //   res.json({
-    //     success: false,
-    //     message: "No traffic data available for this traffic light.",
-    //   });
-    // }
+
   }
 );
 
+
+
+//End point to get data from sql database for historical data
+app.get("/api/traffic-info/:traffic_light_id", async (req, res) => {
+  const trafficLightId = req.params.traffic_light_id;
+  try {
+    const response = await fetchData(trafficLightId + "_TrafficLight", "waitingCars", getLast24HoursFormatted(), formatDateTime());
+    res.json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    console.error("Error fetching data from sql database:", error);
+    res.status(500).json({ message: "Error fetching data" });
+  }
+});
 //API to take the requests from front end and send them to the context broker
 app.post("/api/patch", async (req, res) => {
   const { contextBrokerUrl, data } = req.body;
