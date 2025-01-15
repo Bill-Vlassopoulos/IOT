@@ -215,6 +215,7 @@ reset();
 
 fetchJunctions(map);
 
+
 const ctx = document.getElementById("myChart").getContext("2d");
 const myChart = new Chart(ctx, {
   type: "line", // Change to 'line' for a line chart
@@ -222,28 +223,28 @@ const myChart = new Chart(ctx, {
     labels: ["January", "February", "March", "April", "May", "June", "July"], // Example labels
     datasets: [
       {
-        label: "Dataset 1",
+        label: "Φανάρι 1",
         data: [], // Example data for the first line
         borderColor: "rgba(255, 99, 132, 1)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         fill: false,
       },
       {
-        label: "Dataset 2",
+        label: "Φανάρι 2",
         data: [], // Example data for the second line
         borderColor: "rgba(54, 162, 235, 1)",
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         fill: false,
       },
       {
-        label: "Dataset 3",
+        label: "Φανάρι 3",
         data: [], // Example data for the third line
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: false,
       },
       {
-        label: "Dataset 4",
+        label: "Φανάρι 4",
         data: [], // Example data for the fourth line
         borderColor: "rgba(153, 102, 255, 1)",
         backgroundColor: "rgba(153, 102, 255, 0.2)",
@@ -263,6 +264,19 @@ const myChart = new Chart(ctx, {
 });
 
 //FUNCTIONS
+// jsonList.sort((a, b) => a.id.localeCompare(b.id));
+function updateChartData() {
+  if (trafficLightData.length > 0) {
+    trafficLightData.sort((a, b) => a.id.localeCompare(b.id))
+    // Assuming trafficLightData is an array of objects with properties for each dataset
+    myChart.data.datasets[0].data = trafficLightData[0].data;
+    myChart.data.datasets[1].data = trafficLightData[1].data;
+    myChart.data.datasets[2].data = trafficLightData[2].data;
+    myChart.data.datasets[3].data = trafficLightData[3].data;
+    myChart.update();
+  }
+}
+
 
 async function fetchJunctions() {
   try {
@@ -321,7 +335,7 @@ async function fetchJunctions() {
                 data: lightdata.data,
               });
 
-              //console.log(trafficLightData);
+              console.log(trafficLightData);
 
               if (tl.title === "Φανάρι 1") {
                 schedules[0] = tl.schedule;
@@ -405,6 +419,7 @@ async function fetchJunctions() {
                   );
                 }, 1000);
               }
+
             });
           } catch (error) {
             console.error("Error fetching traffic lights: ", error);
@@ -424,6 +439,7 @@ async function fetchTrafficLights(locationId) {
   try {
     const response = await fetch(`/api/traffic-lights/${locationId}`);
     const tlData = await response.json();
+    updateChartData();
     return tlData;
   } catch (error) {
     console.error("Error fetching traffic lights: ", error);
