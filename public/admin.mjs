@@ -1,4 +1,3 @@
-
 //PORT
 const PORT = 3000;
 
@@ -216,56 +215,54 @@ reset();
 
 fetchJunctions(map);
 
-const ctx = document.getElementById('myChart').getContext('2d');
+const ctx = document.getElementById("myChart").getContext("2d");
 const myChart = new Chart(ctx, {
-  type: 'line', // Change to 'line' for a line chart
+  type: "line", // Change to 'line' for a line chart
   data: {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'], // Example labels
+    labels: ["January", "February", "March", "April", "May", "June", "July"], // Example labels
     datasets: [
       {
-        label: 'Dataset 1',
+        label: "Dataset 1",
         data: [], // Example data for the first line
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
         fill: false,
       },
       {
-        label: 'Dataset 2',
+        label: "Dataset 2",
         data: [], // Example data for the second line
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: "rgba(54, 162, 235, 1)",
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
         fill: false,
       },
       {
-        label: 'Dataset 3',
+        label: "Dataset 3",
         data: [], // Example data for the third line
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: false,
       },
       {
-        label: 'Dataset 4',
+        label: "Dataset 4",
         data: [], // Example data for the fourth line
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: "rgba(153, 102, 255, 1)",
+        backgroundColor: "rgba(153, 102, 255, 0.2)",
         fill: false,
-      }
-    ]
+      },
+    ],
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       y: {
-        beginAtZero: true
-      }
-    }
-  }
+        beginAtZero: true,
+      },
+    },
+  },
 });
 
-
 //FUNCTIONS
-
 
 async function fetchJunctions() {
   try {
@@ -312,18 +309,20 @@ async function fetchJunctions() {
             title_pososto_fanari_3.innerHTML = trafficLights[2].title;
             title_pososto_fanari_4.innerHTML = trafficLights[3].title;
 
-            trafficLights.forEach(function (tl) {
+            trafficLights.forEach(async function (tl) {
               subscribeToTopic(`v3_fanaria/${tl.id}`);
               console.log("Scheduled:", tl.schedule);
-              let id = tl.id;
-              let data = async function (id) {
 
-                const response = await fetch(`/api/traffic-info/${id}`);
-                const tlData = await response.json();
-                console.log(tlData);
+              let lightdata = await fetchTrafficLightData(tl.id);
+              //console.log(lightdata);
 
-              };
-              data(id);
+              trafficLightData.push({
+                id: tl.id,
+                data: lightdata.data,
+              });
+
+              //console.log(trafficLightData);
+
               if (tl.title === "Φανάρι 1") {
                 schedules[0] = tl.schedule;
                 sliders[0].slider.value = location.pososta[0][tl.id];
@@ -424,6 +423,17 @@ async function fetchJunctions() {
 async function fetchTrafficLights(locationId) {
   try {
     const response = await fetch(`/api/traffic-lights/${locationId}`);
+    const tlData = await response.json();
+    return tlData;
+  } catch (error) {
+    console.error("Error fetching traffic lights: ", error);
+    throw error;
+  }
+}
+
+async function fetchTrafficLightData(id) {
+  try {
+    const response = await fetch(`/api/traffic-info/${id}`);
     const tlData = await response.json();
     return tlData;
   } catch (error) {

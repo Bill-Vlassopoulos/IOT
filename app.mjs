@@ -8,7 +8,8 @@ import { dirname } from "path";
 import path from "path";
 import express from "express";
 import axios from "axios";
-import { fetchData } from './model/queries.mjs';
+import { fetchData } from "./model/queries.mjs";
+import { get } from "http";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -19,22 +20,22 @@ function getLast24HoursFormatted() {
   const now = new Date();
   const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const year = last24Hours.getFullYear();
-  const month = String(last24Hours.getMonth() + 1).padStart(2, '0');
-  const day = String(last24Hours.getDate()).padStart(2, '0');
-  const hours = String(last24Hours.getHours()).padStart(2, '0');
-  const minutes = String(last24Hours.getMinutes()).padStart(2, '0');
-  const seconds = String(last24Hours.getSeconds()).padStart(2, '0');
+  const month = String(last24Hours.getMonth() + 1).padStart(2, "0");
+  const day = String(last24Hours.getDate()).padStart(2, "0");
+  const hours = String(last24Hours.getHours()).padStart(2, "0");
+  const minutes = String(last24Hours.getMinutes()).padStart(2, "0");
+  const seconds = String(last24Hours.getSeconds()).padStart(2, "0");
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 function formatDateTime() {
   const date = new Date();
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
@@ -138,7 +139,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
       const trafficLight = await axios.get(
         "http://150.140.186.118:1026/v2/entities?id=" +
-        cb_data_junction.fanaria.value[i]
+          cb_data_junction.fanaria.value[i]
       );
       let cb_data_trafficlight = JSON.stringify(trafficLight.data);
       cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
@@ -202,17 +203,20 @@ app.get(
       success: true,
       data: trafficInfo,
     });
-
   }
 );
-
-
 
 //End point to get data from sql database for historical data
 app.get("/api/traffic-info/:traffic_light_id", async (req, res) => {
   const trafficLightId = req.params.traffic_light_id;
   try {
-    const response = await fetchData(trafficLightId + "_TrafficLight", "waitingCars", getLast24HoursFormatted(), formatDateTime());
+    const response = await fetchData(
+      trafficLightId + "_TrafficLight",
+      "waitingCars",
+      "2025-01-05 16:19:48",
+      "2025-01-06 16:19:48"
+    );
+    console.log(response);
     res.json({
       success: true,
       data: response,
@@ -222,6 +226,7 @@ app.get("/api/traffic-info/:traffic_light_id", async (req, res) => {
     res.status(500).json({ message: "Error fetching data" });
   }
 });
+
 //API to take the requests from front end and send them to the context broker
 app.post("/api/patch", async (req, res) => {
   const { contextBrokerUrl, data } = req.body;
