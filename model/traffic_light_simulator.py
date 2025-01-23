@@ -4,6 +4,11 @@ import json
 import requests
 import threading
 import time
+import sys
+
+id = int(sys.argv[1])
+
+GLOBAL_SEED = random.seed(id)
 
 # import paho.mqtt.client as mqtt
 
@@ -23,18 +28,20 @@ link = "http://150.140.186.118:1026/v2/entities/"
 def main():
 
     # Traffic Lights
-    fanari_0 = Traffic_Light("v3_omada14_fanari_0", "Φανάρι 1")
-    fanari_1 = Traffic_Light("v3_omada14_fanari_1", "Φανάρι 2")
-    fanari_2 = Traffic_Light("v3_omada14_fanari_2", "Φανάρι 3")
-    fanari_3 = Traffic_Light("v3_omada14_fanari_3", "Φανάρι 4")
+    fanari_0 = Traffic_Light("v3_omada14_fanari_" + str(4 * id), "Φανάρι 1")
+    fanari_1 = Traffic_Light("v3_omada14_fanari_" + str(4 * id + 1), "Φανάρι 2")
+    fanari_2 = Traffic_Light("v3_omada14_fanari_" + str(4 * id + 2), "Φανάρι 3")
+    fanari_3 = Traffic_Light("v3_omada14_fanari_" + str(4 * id + 3), "Φανάρι 4")
 
-    fanari_0.set_random_waiting_vehicles()
-    fanari_1.set_random_waiting_vehicles()
-    fanari_2.set_random_waiting_vehicles()
-    fanari_3.set_random_waiting_vehicles()
+    fanari_0.set_random_waiting_vehicles(seed=GLOBAL_SEED)
+    fanari_1.set_random_waiting_vehicles(seed=GLOBAL_SEED)
+    fanari_2.set_random_waiting_vehicles(seed=GLOBAL_SEED)
+    fanari_3.set_random_waiting_vehicles(seed=GLOBAL_SEED)
 
     # Junction 0 Πανεπιστήμιο Πατρών
-    junction_0 = Traffic_Juction("v3_omada14_diastavrosi_0", "Πανεπιστήμιο Πατρών")
+    junction_0 = Traffic_Juction(
+        "v3_omada14_diastavrosi_" + str(id), "Πανεπιστήμιο Πατρών"
+    )
     junction_0.add_traffic_light(fanari_0)
     junction_0.add_traffic_light(fanari_1)
     junction_0.add_traffic_light(fanari_2)
@@ -44,7 +51,7 @@ def main():
         junction_0.check_for_cb_update()
         for i in range(3):
             for traffic_light in junction_0.traffic_lights:
-                traffic_light.set_random_waiting_vehicles()
+                traffic_light.set_random_waiting_vehicles(seed=GLOBAL_SEED)
                 traffic_light.patch_waiting_vehicles()
             time.sleep(float(junction_0.T) / 3)
         if junction_0.mode == 0:
@@ -58,123 +65,6 @@ def main():
                 if junction_0.ptl == 0:
                     junction_0.mode = 0
                 junction_0.general_cb_patch()
-
-    # junction_0.traffic_lights_schedule()
-
-    # for x in junction_0.traffic_lights:
-    #     print(x.id + ": " + str(x.get_sum_waiting_vehicles()))
-    # # # Junction 1 Τόφαλος 1
-
-    # mqtt_thread = threading.Thread(target=start_mqtt_loop)
-    # mqtt_thread.start()
-
-    # junction_0_task = PeriodicTask(
-    #     float(junction_0.T),
-    #     [junction_0.check_for_update_T, junction_0.traffic_lights_schedule],
-    # )
-    # junction_0_task.start()
-
-    # traffic_light_tasks = []
-    # for traffic_light in junction_0.traffic_lights:
-    #     task = PeriodicTask(
-    #         float(junction_0.T) / 3,
-    #         [
-    #             traffic_light.set_random_waiting_vehicles,
-    #             traffic_light.patch_waiting_vehicles,
-    #         ],
-    #     )
-    #     task.start()
-    #     traffic_light_tasks.append(task)
-
-    # update_task = PeriodicTask(10, [update_intervals], junction_0=junction_0, junction_0_task=junction_0_task, traffic_light_tasks=traffic_light_tasks)  # Check for updates every 10 seconds
-    # update_task.start()
-
-    #  # Periodically check for updates to T and update intervals
-    # def update_intervals():
-    #     junction_0.check_for_update_T()
-    #     junction_0.T=float(junction_0.T)
-    #     print("Updating to ", junction_0.T," seconds")
-    #     junction_0_task.update_interval((junction_0.T))
-    #     for task in traffic_light_tasks:
-    #         task.update_interval(float(junction_0.T) / 3)
-
-    # update_task = PeriodicTask(10, [update_intervals])  # Check for updates every 10 seconds
-    # update_task.start()
-
-
-# # Callback when the client receives a CONNACK response from the server
-# def on_connect(client, userdata, flags, rc):
-#     print(f"Connected with result code {rc}")
-#     # Subscribing to the topic
-#     client.subscribe(MQTT_TOPIC)
-
-
-# # Callback when a PUBLISH message is received from the server
-# def on_message(client, userdata, msg):
-#     try:
-#         payload = json.loads(msg.payload.decode())
-#         pretty_payload = json.dumps(payload, indent=4)
-
-#         MQTT_notifications.append(
-#             {
-#                 payload["data"][0]["id"]: payload["data"][0]["period"]["value"][
-#                     "duration"
-#                 ]
-#             }
-#         )
-#         print(MQTT_notifications)
-#         message_received = True
-#         # print("\nMessage received=", message_received)
-#     except json.JSONDecodeError:
-#         # print(f"Topic: {msg.topic}\nMessage: {msg.payload.decode()}")
-#         message_received = True
-#         # print("\nMessage received=", message_received)
-
-
-# def check_mqtt_message():
-#     print(message_received)  # Use the global variable
-#     if message_received:
-#         print("MQTT message received during the period.")
-#         message_received = False  # Reset the flag
-#     else:
-#         print("No MQTT message received during the period.")
-
-
-# def start_mqtt_loop():
-#     # Create an MQTT client instance
-#     client = mqtt.Client()
-
-#     # Assign the callback functions
-#     client.on_connect = on_connect
-#     client.on_message = on_message
-
-#     # Connect to the MQTT broker
-#     client.connect(MQTT_BROKER, MQTT_PORT, 60)
-#     client.loop_forever()
-
-
-# def update_intervals(junction_0, junction_0_task, traffic_light_tasks):
-#     junction_0.check_for_update_T()
-#     junction_0.T = float(junction_0.T)
-#     print("Updating to ", junction_0.T, " seconds")
-#     junction_0_task.update_interval(junction_0.T)
-#     for task in traffic_light_tasks:
-#         task.update_interval(float(junction_0.T) / 3)
-
-
-# def run_periodically(interval, funcs, *args, **kwargs):
-#     def wrapper():
-#         for func in funcs:
-#             func(*args, **kwargs)
-#         threading.Timer(interval, wrapper).start()
-
-#     threading.Timer(interval, wrapper).start()
-
-
-# def _time(starttime, endtime):
-#     starttime = starttime.isoformat()
-#     endtime = endtime.isoformat()
-#     return {"starttime": starttime, "endtime": endtime}
 
 
 class Traffic_Light:
@@ -215,16 +105,22 @@ class Traffic_Light:
             print(f"Error while updating entity {url}: {e}")
 
     def get_sum_waiting_vehicles(self):
-        # print(self.id + ": " + str(sum(self.waiting_vehicles.values())))
+        print(self.id + ": " + str(sum(self.waiting_vehicles.values())))
         return sum(self.waiting_vehicles.values())
 
-    def set_random_waiting_vehicles(self):
+    def set_random_waiting_vehicles(self, seed=None):
+        if seed is None:
+            seed = GLOBAL_SEED
+        random.seed(seed)
+
         self.waiting_vehicles = {
-            "cars": random.randint(1, 10),
-            "bikes": random.randint(1, 10),
-            "buses": random.randint(1, 10),
-            "trucks": random.randint(1, 10),
+            "cars": max(1, int(random.gauss(5, 2))),  # mean=5, std=2
+            "bikes": max(0, int(random.gauss(0.5, 0.5))),  # mean=0.5, std=0.5
+            "buses": max(0, int(random.gauss(1, 0.5))),  # mean=1, std=0.5
+            "trucks": max(0, int(random.gauss(0.5, 0.5))),  # mean=0.5, std=0.5
         }
+
+        # print(self.id + ": " + json.dumps(self.waiting_vehicles, indent=4))
 
     def set_traffic_light_time(self, value):
         self.traffic_light_time = {
@@ -260,6 +156,8 @@ class Traffic_Juction:
         self.traffic_lights = []
         self.ptl = 0
         self.mode = 0
+        self.orangetime = 2
+        self.gaptime = 2
 
     def set_T(self, T):
         self.T = T
@@ -268,8 +166,8 @@ class Traffic_Juction:
         self.traffic_lights.append(traffic_light)
 
     def traffic_lights_schedule(self):
-        gaptime = 2
-        orangetime = 2
+        gaptime = self.gaptime
+        orangetime = self.orangetime
         self.T = float(self.T)
         overall_green_time = (
             self.T - len(self.traffic_lights) * (orangetime) - 4 * gaptime
@@ -333,8 +231,8 @@ class Traffic_Juction:
     def static_schedule(self):
         url = link + self.id
         response = requests.get(url)
-        gaptime = 2
-        orangetime = 2
+        gaptime = self.gaptime
+        orangetime = self.orangetime
         self.T = float(self.T)
 
         if response.status_code == 200:
@@ -475,6 +373,12 @@ class Traffic_Juction:
             if self.ptl != entity["ptl"]["value"]:
                 self.ptl = entity["ptl"]["value"]
                 # print("Ptl updated to ", self.ptl)
+            if self.orangetime != entity["orange_duration"]["value"]:
+                self.orangetime = entity["orange_duration"]["value"]
+                # print("Orangetime updated to ", self.orangetime)
+            if self.gaptime != entity["gap_duration"]["value"]:
+                self.gaptime = entity["gap_duration"]["value"]
+                # print("Gaptime updated to ", self.gaptime)
         else:
             print(f"Failed to retrieve entity: {response.status_code}")
             print(response.json())
