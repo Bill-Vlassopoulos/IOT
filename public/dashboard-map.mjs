@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const icon = getIconBasedOnSchedule(tl.schedule);
                     trafficLightMarkers[index].setIcon(icon);
                   });
-                }, 1000);
+                }, 100);
               })
               .catch((error) => {
                 console.error("Error fetching traffic lights: ", error);
@@ -305,8 +305,7 @@ openDashboardBtn.addEventListener("click", () => {
   mapElement.classList.add("map-blurred");
   openDashboardBtn.classList.add("hidden");
   goBackButton.classList.add("hidden");
-
-  let intervalChart = setInterval(updateChart, 1000);
+  updateChart();
   updateInterval = setInterval(updateTrafficLightColor, 1000);
 });
 

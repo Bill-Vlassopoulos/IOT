@@ -59,6 +59,8 @@ const sliders = [
   },
 ];
 
+
+
 const fanarakia = [
   {
     green_light: document.getElementById("green_light1"),
@@ -301,9 +303,10 @@ function formatTime(recvTime) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function updateChartData() {
+async function updateChartData() {
+  console.log("Updating chart data with traffic light data:", trafficLightData);
   if (trafficLightData.length > 0) {
-    trafficLightData.sort((a, b) => a.id.localeCompare(b.id))
+    trafficLightData.sort((a, b) => a.id.localeCompare(b.id));
     console.log(trafficLightData);
 
     const labels = trafficLightData[0].data.map(item => formatTime(item.recvTime));
@@ -313,14 +316,13 @@ function updateChartData() {
     myChart.data.datasets[1].data = trafficLightData[1].data.map(item => item.attrValue);
     myChart.data.datasets[2].data = trafficLightData[2].data.map(item => item.attrValue);
     myChart.data.datasets[3].data = trafficLightData[3].data.map(item => item.attrValue);
-    myChart.update();
-  }
-  else {
+    await myChart.update();
+  } else {
     myChart.data.datasets[0].data = [];
     myChart.data.datasets[1].data = [];
     myChart.data.datasets[2].data = [];
     myChart.data.datasets[3].data = [];
-    myChart.update();
+    await myChart.update();
   }
 }
 
@@ -374,13 +376,29 @@ async function fetchJunctions() {
               subscribeToTopic(`v3_fanaria/${tl.id}`);
               console.log("Scheduled:", tl.schedule);
 
-              let lightdata = await fetchTrafficLightData(tl.id);
-              //console.log(lightdata);
+              // let lightdata = await fetchTrafficLightData(tl.id);
+              // //console.log(lightdata);
 
-              trafficLightData.push({
-                id: tl.id,
-                data: lightdata.data,
-              });
+              // trafficLightData.push({
+              //   id: tl.id,
+              //   data: lightdata.data,
+              // });
+
+              const fetchPromises = trafficLights.map(tl => fetchTrafficLightData(tl.id));
+
+              Promise.all(fetchPromises)
+                .then(results => {
+                  results.forEach((lightdata, index) => {
+                    trafficLightData.push({
+                      id: tl.id,
+                      data: lightdata.data,
+                    });
+                  });
+                  updateChartData();
+                })
+                .catch(error => {
+                  console.error("Error fetching traffic lights: ", error);
+                });
 
               console.log(trafficLightData);
 
@@ -468,7 +486,7 @@ async function fetchJunctions() {
               }
 
             });
-            let interval = setInterval(updateChartData, 1000);
+
           } catch (error) {
             console.error("Error fetching traffic lights: ", error);
           }
@@ -635,7 +653,14 @@ form.addEventListener("submit", function (event) {
 
   localStorage.setItem("formData", JSON.stringify(formData));
 
-  patch_entity();
+  let sum = parseInt(formData.pososto_fanari1) + parseInt(formData.pososto_fanari2) + parseInt(formData.pososto_fanari3) + parseInt(formData.pososto_fanari4);
+  if (sum !== 100) {
+    alert("The sum of the percentages must be 100%");
+
+  } else {
+    patch_entity();
+  }
+
 
   //console.log("Form Data:", formData);
 
