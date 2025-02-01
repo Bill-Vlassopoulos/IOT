@@ -4,7 +4,7 @@ import { Database } from "sqlite-async";
 
 let sql;
 try {
-  sql = await Database.open("model/admins.sqlite3");
+  sql = await Database.open("model/admins.sqlite");
 } catch (error) {
   throw Error("Δεν ήταν δυνατό να ανοίξει η βάση δεδομένων." + error);
 }

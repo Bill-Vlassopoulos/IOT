@@ -60,5 +60,5 @@ export let checkAuthenticated = function (req, res, next) {
 export let doLogout = (req, res) => {
   //Σημειώνουμε πως ο χρήστης δεν είναι πια συνδεδεμένος
   req.session.destroy();
-  res.redirect("/signin");
+  res.redirect("/");
 };

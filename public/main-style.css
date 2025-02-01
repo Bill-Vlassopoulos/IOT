@@ -142,3 +142,11 @@
 .footer {
   background-color: black;
 }
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  flex-direction: row;
+}

@@ -9,7 +9,7 @@ import path from "path";
 import express from "express";
 import axios from "axios";
 import { fetchData } from "./model/queries.mjs";
-import { get } from "http";
+//import { get } from "http";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
