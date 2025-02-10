@@ -59,6 +59,56 @@ const sliders = [
   },
 ];
 
+function adjustSliders(changedIndex) {
+  let total = 0;
+  let minValue = 15;
+  let maxValue = 55;
+  let numSliders = sliders.length;
+
+  // Get current values of sliders
+  let values = sliders.map(({ slider }) => parseInt(slider.value));
+
+  // Calculate total sum excluding the changed slider
+  for (let i = 0; i < numSliders; i++) {
+    if (i !== changedIndex) {
+      total += values[i];
+    }
+  }
+
+  // Ensure total sum does not exceed 100
+  let remaining = 100 - values[changedIndex];
+
+  if (remaining < (numSliders - 1) * minValue) {
+    alert("Cannot adjust further. Minimum value reached.");
+    return;
+  }
+
+  // Distribute remaining percentage among other sliders
+  let otherSliders = numSliders - 1;
+  let distributedValues = values.map((value, index) =>
+    index === changedIndex ? value : Math.max(minValue, Math.round((remaining / total) * value))
+  );
+
+  // Adjust the sum to exactly 100
+  let finalTotal = distributedValues.reduce((sum, val) => sum + val, 0);
+  let diff = 100 - finalTotal;
+
+  // Adjust the first available slider to fix rounding errors
+  for (let i = 0; i < distributedValues.length; i++) {
+    if (i !== changedIndex && distributedValues[i] + diff >= minValue && distributedValues[i] + diff <= maxValue) {
+      distributedValues[i] += diff;
+      break;
+    }
+  }
+
+  // Update slider values
+  sliders.forEach(({ slider, output }, index) => {
+    slider.value = distributedValues[index];
+    output.textContent = `${distributedValues[index]}%`;
+  });
+}
+
+
 
 
 const fanarakia = [
@@ -524,10 +574,8 @@ async function fetchTrafficLightData(id) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  sliders.forEach(({ slider, output }) => {
-    slider.addEventListener("input", function () {
-      output.textContent = `${slider.value}%`;
-    });
+  sliders.forEach(({ slider }, index) => {
+    slider.addEventListener("input", () => adjustSliders(index));
   });
 });
 
