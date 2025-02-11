@@ -2,6 +2,7 @@ import random
 import datetime
 import requests
 import time
+import RPi.GPIO as GPIO
 
 # Context Broker API
 CONTEXT_BROKER_URL = "http://150.140.186.118:1026/v2/entities/"
@@ -38,7 +39,7 @@ for light in TRAFFIC_LIGHTS_PINS.values():
 def reset_all_red():
     """Turn all traffic lights red."""
     for light in TRAFFIC_LIGHTS:
-        set_traffic_light(light, "red")
+        set_traffic_light_state(light, "red")
 
 
 def set_traffic_light_state(light_id, color):
@@ -235,12 +236,7 @@ if __name__ == "__main__":
         # Fetch junction settings
         T, orangetime, gaptime, mode, ptl, fixed_schedule = fetch_junction_settings()
 
-        if mode == 0:
-            print("Dynamic Mode: Generating schedule based on traffic.")
-            schedule = generate_dynamic_schedule(T, orangetime, gaptime)
-        else:
-            print("Static Mode: Using predefined schedule.")
-            schedule = generate_static_schedule(T, orangetime, gaptime, fixed_schedule)
+        update_schedule(mode, T, orangetime, gaptime, fixed_schedule, ptl)
 
         # Iterate through the traffic lights in the schedule
         reset_all_red()
