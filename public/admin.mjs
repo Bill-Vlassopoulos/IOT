@@ -755,12 +755,9 @@ form.addEventListener("submit", function (event) {
   localStorage.setItem("formData", JSON.stringify(formData));
 
   let sum = parseInt(formData.pososto_fanari1) + parseInt(formData.pososto_fanari2) + parseInt(formData.pososto_fanari3) + parseInt(formData.pososto_fanari4);
-  if (sum !== 100) {
-    alert("The sum of the percentages must be 100%");
 
-  } else {
-    patch_entity();
-  }
+  patch_entity();
+
 
 
   //console.log("Form Data:", formData);
