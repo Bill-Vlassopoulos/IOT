@@ -24,6 +24,7 @@ const ptl = document.getElementById("ptl");
 const period = document.getElementById("period_time");
 const gap = document.getElementById("gap_time");
 const orange = document.getElementById("orange_time");
+const photo_request_button = document.getElementById("photoRequest");
 
 let interval1, interval2, interval3, interval4;
 let updateIntervals = [interval1, interval2, interval3, interval4];
@@ -572,6 +573,41 @@ async function fetchTrafficLightData(id) {
     throw error;
   }
 }
+
+const camera_id = "v3_omada14_camera_1";
+photo_request_button.addEventListener("click", async function () {
+  const contextBrokerUrl = `http://150.140.186.118:1026/v2/entities/${camera_id}/attrs`;
+
+  const data = {
+    requestStatus: {
+      type: "Text",
+      value: "Requested",
+    },
+  };
+
+  try {
+    const response = await fetch(`/api/photo-request`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cameraId: camera_id }),
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      console.log("Photo request status updated to Requested:", responseData);
+
+    } else {
+      console.error("Failed to update photo request status");
+
+    }
+  } catch (error) {
+    console.error("Error:", error);
+
+  }
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
   sliders.forEach(({ slider }, index) => {

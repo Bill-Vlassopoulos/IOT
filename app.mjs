@@ -2,7 +2,7 @@ import taskListSession from "./app-setup/app-setup-session.mjs";
 import * as logInController from "./controller/login-controller.mjs";
 //import { getalljunctions, gettrafficlights } from "./model/queries.mjs";
 //import { getlasttrafficInfo } from "./model/queries.mjs";
-
+import { DateTime } from "luxon";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
@@ -139,7 +139,7 @@ app.get("/api/traffic-lights/:junction_id", async (req, res) => {
     for (let i = 0; i < cb_data_junction.fanaria.value.length; i++) {
       const trafficLight = await axios.get(
         "http://150.140.186.118:1026/v2/entities?id=" +
-          cb_data_junction.fanaria.value[i]
+        cb_data_junction.fanaria.value[i]
       );
       let cb_data_trafficlight = JSON.stringify(trafficLight.data);
       cb_data_trafficlight = JSON.parse(cb_data_trafficlight);
@@ -210,11 +210,16 @@ app.get(
 app.get("/api/traffic-info/:traffic_light_id", async (req, res) => {
   const trafficLightId = req.params.traffic_light_id;
   try {
+    const now = DateTime.now().setZone("Europe/Athens");
+    const startTime = now.minus({ hours: 24 }).toFormat("yyyy-MM-dd HH:mm:ss");
+    const endTime = now.toFormat("yyyy-MM-dd HH:mm:ss");
+    console.log("Start time:", startTime);
+    console.log("End time:", endTime);
     const response = await fetchData(
       trafficLightId + "_TrafficLight",
       "waitingCars",
-      "2025-01-05 16:19:48",
-      "2025-01-06 16:19:48"
+      startTime,
+      endTime
     );
     console.log(response);
     res.json({
@@ -242,6 +247,32 @@ app.post("/api/patch", async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ error: "Failed to patch data to context broker" });
   }
+});
+
+
+app.post("/api/photo-request", async (req, res) => {
+  const { cameraId } = req.body;
+  const contextBrokerUrl = `http://150.140.186.118:1026/v2/entities/${cameraId}/attrs`;
+
+  const data = {
+    requestStatus: {
+      type: "Text",
+      value: "Requested",
+    },
+  };
+
+  try {
+    const response = await axios.patch(contextBrokerUrl, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    res.json({ success: true, message: "Photo request status updated to Requested" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Failed to update photo request status" });
+  }
+
 });
 
 app.listen(PORT, () => {
