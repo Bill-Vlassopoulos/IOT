@@ -169,48 +169,63 @@ client.onMessageArrived = function (message) {
   // console.log("Message:", message.payloadString);
 
   const jsonData = JSON.parse(message.payloadString);
-  const trafficLightData = jsonData.data[0];
+  // console.log(jsonData);
+  if (message.destinationName.includes("imageBase64")) {
+    const imageBase64 = jsonData.data[0].imageBase64.value;
+    let encoded_str = imageBase64;
+    let missing_padding = encoded_str.length % 4;
+    if (missing_padding !== 0) {
+      encoded_str += '='.repeat(4 - missing_padding);
+    }
+    const newWindow = window.open();
+    const imageElement = newWindow.document.createElement("img");
+    imageElement.src = `data:image/jpeg;base64,${encoded_str}`;
+    newWindow.document.body.appendChild(imageElement);
+    unsubscribeFromTopic("v3_omada14_camera_1/imageBase64");
+  } else {
+    const trafficLightData = jsonData.data[0];
 
-  console.log("Traffic Light title:", trafficLightData.title.value);
-  let title = trafficLightData.title.value;
-  let schedule = trafficLightData.schedule.value;
+    console.log("Traffic Light title:", trafficLightData.title.value);
+    let title = trafficLightData.title.value;
+    let schedule = trafficLightData.schedule.value;
 
-  if (title === "Φανάρι 1") {
-    schedules[0] = schedule;
-    updateTrafficLightColor(
-      schedule,
-      fanarakia[0].green_light,
-      fanarakia[0].orange_light,
-      fanarakia[0].red_light
-    );
-    console.log("Updated Fanari 1");
-  } else if (title === "Φανάρι 2") {
-    schedules[1] = schedule;
-    updateTrafficLightColor(
-      schedule,
-      fanarakia[1].green_light,
-      fanarakia[1].orange_light,
-      fanarakia[1].red_light
-    );
-    console.log("Updated Fanari 2");
-  } else if (title === "Φανάρι 3") {
-    schedules[2] = schedule;
-    updateTrafficLightColor(
-      schedule,
-      fanarakia[2].green_light,
-      fanarakia[2].orange_light,
-      fanarakia[2].red_light
-    );
-    console.log("Updated Fanari 3");
-  } else if (title === "Φανάρι 4") {
-    schedules[3] = schedule;
-    updateTrafficLightColor(
-      schedule,
-      fanarakia[3].green_light,
-      fanarakia[3].orange_light,
-      fanarakia[3].red_light
-    );
-    console.log("Updated Fanari 4");
+    if (title === "Φανάρι 1") {
+      schedules[0] = schedule;
+      updateTrafficLightColor(
+        schedule,
+        fanarakia[0].green_light,
+        fanarakia[0].orange_light,
+        fanarakia[0].red_light
+      );
+      console.log("Updated Fanari 1");
+    } else if (title === "Φανάρι 2") {
+      schedules[1] = schedule;
+      updateTrafficLightColor(
+        schedule,
+        fanarakia[1].green_light,
+        fanarakia[1].orange_light,
+        fanarakia[1].red_light
+      );
+      console.log("Updated Fanari 2");
+    } else if (title === "Φανάρι 3") {
+      schedules[2] = schedule;
+      updateTrafficLightColor(
+        schedule,
+        fanarakia[2].green_light,
+        fanarakia[2].orange_light,
+        fanarakia[2].red_light
+      );
+      console.log("Updated Fanari 3");
+    } else if (title === "Φανάρι 4") {
+      schedules[3] = schedule;
+      updateTrafficLightColor(
+        schedule,
+        fanarakia[3].green_light,
+        fanarakia[3].orange_light,
+        fanarakia[3].red_light
+      );
+      console.log("Updated Fanari 4");
+    }
   }
 };
 
@@ -576,6 +591,8 @@ async function fetchTrafficLightData(id) {
 
 const camera_id = "v3_omada14_camera_1";
 photo_request_button.addEventListener("click", async function () {
+  event.preventDefault();
+  subscribeToTopic("v3_omada14_camera_1/imageBase64");
   const contextBrokerUrl = `http://150.140.186.118:1026/v2/entities/${camera_id}/attrs`;
 
   const data = {
